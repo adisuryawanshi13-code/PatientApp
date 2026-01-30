@@ -1,176 +1,206 @@
 package com.example.patientapp;
 
-import android.app.Activity;
-import android.app.Dialog;
+import android.app.DownloadManager;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
+import android.os.Environment;
+import android.util.Log;
+import android.view.Gravity;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
-import com.google.zxing.BarcodeFormat;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private View homeLayout, eventsLayout;
-    private LinearLayout eventsList;
-    private TextView tvEmpty;
+    private static final String TAG = "CLOUDINARY_DEBUG";
 
-    private final ActivityResultLauncher<Intent> folderLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    String name = result.getData().getStringExtra("f_name");
-                    String date = result.getData().getStringExtra("f_date");
-                    String hospital = result.getData().getStringExtra("f_hospital");
-                    String category = result.getData().getStringExtra("f_category");
-                    String desc = result.getData().getStringExtra("f_desc");
-                    addFolderCard(name, date, hospital, category, desc);
-                }
-            });
+    // 🔴 REPLACE THESE
+    private static final String CLOUD_NAME = "dwwdy3bk2";
+    private static final String UPLOAD_PRESET = "android_pdf_upload";
+
+    private Uri selectedFileUri;
+    private String fileUrl = "";
+
+    private DatabaseReference dbRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        homeLayout = findViewById(R.id.home_layout);
-        eventsLayout = findViewById(R.id.events_layout);
-        eventsList = findViewById(R.id.events_list_container);
-        tvEmpty = findViewById(R.id.tv_empty);
+        // UI
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setGravity(Gravity.CENTER);
+        layout.setPadding(40, 40, 40, 40);
 
-        ImageView qrImageView = findViewById(R.id.patient_qr_code);
-        generatePatientQR(qrImageView, "Patient: Itachi | ABHA: 12-3456-7890-1234");
+        Button uploadBtn = new Button(this);
+        uploadBtn.setText("Upload PDF");
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-        bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int itemId = item.getItemId();
+        Button downloadBtn = new Button(this);
+        downloadBtn.setText("Download PDF");
 
-                if (itemId == R.id.nav_home) {
-                    homeLayout.setVisibility(View.VISIBLE);
-                    eventsLayout.setVisibility(View.GONE);
-                    return true;
-                } else if (itemId == R.id.nav_events) {
-                    homeLayout.setVisibility(View.GONE);
-                    eventsLayout.setVisibility(View.VISIBLE);
-                    return true;
-                } else if (itemId == R.id.nav_files) {
-                    Intent intent = new Intent(MainActivity.this, HealthFolderActivity.class);
-                    folderLauncher.launch(intent);
-                    return true;
-                } else if (itemId == R.id.nav_profile) {
-                    // Start the new Profile Activity
-                    Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                    startActivity(intent);
-                    return true;
+        layout.addView(uploadBtn);
+        layout.addView(downloadBtn);
+        setContentView(layout);
+
+        dbRef = FirebaseDatabase.getInstance().getReference("files");
+
+        uploadBtn.setOnClickListener(v -> pickPdf());
+        downloadBtn.setOnClickListener(v -> downloadPdf());
+
+        fetchLastFile();
+    }
+
+    // 📂 PICK FILE
+    private void pickPdf() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/pdf");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        picker.launch(intent);
+    }
+
+    ActivityResultLauncher<Intent> picker =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            Uri uri = result.getData().getData();
+                            if (uri != null) {
+                                getContentResolver().takePersistableUriPermission(
+                                        uri,
+                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                );
+                                selectedFileUri = uri;
+                                new Thread(this::uploadToCloudinary).start();
+                            }
+                        }
+                    }
+            );
+
+    // ☁️ UPLOAD TO CLOUDINARY
+    private void uploadToCloudinary() {
+        try {
+            Log.d(TAG, "Upload started");
+
+            InputStream inputStream = getContentResolver().openInputStream(selectedFileUri);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+            byte[] buffer = new byte[4096];
+            int read;
+            while ((read = inputStream.read(buffer)) != -1) {
+                bos.write(buffer, 0, read);
+            }
+
+            byte[] fileBytes = bos.toByteArray();
+            Log.d(TAG, "File size: " + fileBytes.length);
+
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                    .writeTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                    .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                    .build();
+
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart(
+                            "file",
+                            "document.pdf",
+                            RequestBody.create(fileBytes, MediaType.parse("application/pdf"))
+                    )
+                    .addFormDataPart("upload_preset", UPLOAD_PRESET)
+                    .build();
+
+            // ✅ FIXED ENDPOINT
+            String uploadUrl =
+                    "https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/image/upload";
+
+            Request request = new Request.Builder()
+                    .url(uploadUrl)
+                    .post(requestBody)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            String body = response.body().string();
+
+            if (!response.isSuccessful()) {
+                throw new Exception(body);
+            }
+
+            JSONObject json = new JSONObject(body);
+            fileUrl = json.getString("secure_url");
+
+            Log.d(TAG, "SUCCESS URL = " + fileUrl);
+
+            dbRef.push().child("fileUrl").setValue(fileUrl);
+
+            runOnUiThread(() ->
+                    Toast.makeText(this, "Upload successful", Toast.LENGTH_LONG).show()
+            );
+
+        } catch (Exception e) {
+            Log.e(TAG, "UPLOAD FAILED", e);
+            runOnUiThread(() ->
+                    Toast.makeText(this, "Upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show()
+            );
+        }
+    }
+
+
+    // ⬇️ DOWNLOAD / OPEN
+    private void downloadPdf() {
+        if (fileUrl == null || fileUrl.isEmpty()) {
+            Toast.makeText(this, "No file found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Force download instead of preview
+        String downloadUrl = fileUrl.replace(
+                "/upload/",
+                "/upload/fl_attachment/"
+        );
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(downloadUrl));
+        startActivity(intent);
+    }
+
+
+
+
+
+
+    private void fetchLastFile() {
+        dbRef.limitToLast(1).get().addOnSuccessListener(snapshot -> {
+            if (snapshot.exists()) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    fileUrl = child.child("fileUrl").getValue(String.class);
+                    Log.d(TAG, "Fetched last file URL: " + fileUrl);
                 }
-                return true;
+            } else {
+                Log.d(TAG, "No files found in database.");
             }
         });
-    }
-
-    private void addFolderCard(String name, String date, String hospital, String category, String desc) {
-        if (tvEmpty != null) tvEmpty.setVisibility(View.GONE);
-        CardView card = new CardView(this);
-        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, -2);
-        p.setMargins(0, 0, 0, 24);
-        card.setLayoutParams(p);
-        card.setRadius(32f);
-        card.setCardElevation(6f);
-        card.setClickable(true);
-        card.setFocusable(true);
-        card.setCardBackgroundColor(Color.WHITE);
-        LinearLayout cardContent = new LinearLayout(this);
-        cardContent.setOrientation(LinearLayout.VERTICAL);
-        cardContent.setPadding(40, 40, 40, 40);
-        TextView tTitle = new TextView(this);
-        tTitle.setText("📂 " + name);
-        tTitle.setTextSize(18);
-        tTitle.setTextColor(Color.parseColor("#111827"));
-        tTitle.setTypeface(null, android.graphics.Typeface.BOLD);
-        TextView tSub = new TextView(this);
-        tSub.setText("Date: " + date + " | " + category);
-        tSub.setTextSize(14);
-        tSub.setTextColor(Color.parseColor("#6B7280"));
-        cardContent.addView(tTitle);
-        cardContent.addView(tSub);
-        card.addView(cardContent);
-        card.setOnClickListener(v -> showFolderDetails(name, date, hospital, category, desc));
-        eventsList.addView(card);
-    }
-
-    private void showFolderDetails(String name, String date, String hospital, String category, String desc) {
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(createDetailView(name, date, hospital, category, desc, dialog));
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        }
-        dialog.show();
-    }
-
-    private View createDetailView(String name, String date, String hospital, String category, String desc, Dialog dialog) {
-        LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(Color.WHITE);
-        root.setPadding(60, 60, 60, 60);
-        TextView title = new TextView(this);
-        title.setText(name);
-        title.setTextSize(22);
-        title.setTypeface(null, android.graphics.Typeface.BOLD);
-        title.setPadding(0, 0, 0, 40);
-        root.addView(title);
-        root.addView(createDetailRow("Visit Date", date));
-        root.addView(createDetailRow("Hospital", hospital));
-        root.addView(createDetailRow("Category", category));
-        TextView dText = new TextView(this);
-        dText.setText(desc);
-        dText.setPadding(0, 40, 0, 40);
-        root.addView(dText);
-        Button close = new Button(this);
-        close.setText("Close");
-        close.setOnClickListener(v -> dialog.dismiss());
-        root.addView(close);
-        return root;
-    }
-
-    private View createDetailRow(String label, String value) {
-        LinearLayout row = new LinearLayout(this);
-        TextView lbl = new TextView(this);
-        lbl.setText(label + ": ");
-        lbl.setTypeface(null, android.graphics.Typeface.BOLD);
-        TextView val = new TextView(this);
-        val.setText(value);
-        row.addView(lbl);
-        row.addView(val);
-        return row;
-    }
-
-    private void generatePatientQR(ImageView view, String data) {
-        try {
-            BarcodeEncoder encoder = new BarcodeEncoder();
-            Bitmap bitmap = encoder.encodeBitmap(data, BarcodeFormat.QR_CODE, 400, 400);
-            view.setImageBitmap(bitmap);
-        } catch (Exception e) {}
     }
 }

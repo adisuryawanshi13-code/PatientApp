@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,33 +15,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PatientApp">
-
+        <activity
+            android:name=".HomePage"
+            android:exported="false" />
         <!-- 1. Login Screen -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- 2. Home Screen -->
+        </activity> <!-- 2. Home Screen -->
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
-
-        <!-- 3. Health Folder Form -->
+            android:exported="false" /> <!-- 3. Health Folder Form -->
         <activity
             android:name=".HealthFolderActivity"
-            android:exported="false" />
-
-        <!-- 4. Profile Screen (Added) -->
+            android:exported="false" /> <!-- 4. Profile Screen (Added) -->
         <activity
             android:name=".ProfileActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
-
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
