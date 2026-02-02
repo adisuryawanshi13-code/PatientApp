@@ -78,7 +78,7 @@ public class HomePage extends AppCompatActivity {
 
         if (currentUser == null) {
             // User not logged in → redirect to login
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, RegisterActivity.class));
             finish();
             return;
         }
@@ -93,7 +93,8 @@ public class HomePage extends AppCompatActivity {
         loadUserName();
 
         ImageView qrImageView = findViewById(R.id.patient_qr_code);
-        generatePatientQR(qrImageView, "Patient: Itachi | ABHA: 12-3456-7890-1234");
+        generatePatientQR(qrImageView, "patient_uid:" + uid);
+
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {

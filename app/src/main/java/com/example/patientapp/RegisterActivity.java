@@ -33,6 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        // Firebase
         auth = FirebaseAuth.getInstance();
         usersRef = FirebaseDatabase.getInstance().getReference("users");
 
@@ -48,14 +49,13 @@ public class RegisterActivity extends AppCompatActivity {
 
         setupSpinners();
 
-        // 🔥 AUTH + DB CHECK (FINAL LOGIC)
+        // 🔥 Anonymous Auth (no login flow)
         FirebaseUser user = auth.getCurrentUser();
-
         if (user == null) {
             auth.signInAnonymously()
                     .addOnSuccessListener(authResult -> checkIfUserRegistered())
                     .addOnFailureListener(e ->
-                            Toast.makeText(this, "Auth failed", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Authentication failed", Toast.LENGTH_SHORT).show()
                     );
         } else {
             checkIfUserRegistered();
@@ -64,6 +64,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnComplete.setOnClickListener(v -> saveUserData());
     }
 
+    // ✅ If already registered → redirect by role
     private void checkIfUserRegistered() {
         String uid = auth.getCurrentUser().getUid();
 
@@ -72,17 +73,35 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
-                            startActivity(new Intent(RegisterActivity.this, HomePage.class));
-                            finish();
+                            String role = snapshot.child("role").getValue(String.class);
+                            redirectToHomeBasedOnRole(role);
                         }
-                        // else: stay on register
+                        // else → stay on register screen
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError error) {}
+                    public void onCancelled(@NonNull DatabaseError error) { }
                 });
     }
 
+    // ✅ Role-based navigation
+    private void redirectToHomeBasedOnRole(String role) {
+        Intent intent;
+
+        if ("PATIENT".equalsIgnoreCase(role)) {
+            intent = new Intent(this, HomePage.class);
+        } else if ("DOCTOR".equalsIgnoreCase(role)
+                || "VOLUNTEER".equalsIgnoreCase(role)) {
+            intent = new Intent(this, DoctorHomePageActivity.class);
+        } else {
+            intent = new Intent(this, HomePage.class); // fallback
+        }
+
+        startActivity(intent);
+        finish();
+    }
+
+    // Spinner setup
     private void setupSpinners() {
         String[] genders = {"Select Gender", "Male", "Female", "Other"};
         String[] bloodGroups = {"Select Blood Group","A+","A-","B+","B-","AB+","AB-","O+","O-"};
@@ -101,6 +120,7 @@ public class RegisterActivity extends AppCompatActivity {
         spinnerBloodGroup.setSelection(0);
     }
 
+    // ✅ Save user and redirect by role
     private void saveUserData() {
         FirebaseUser firebaseUser = auth.getCurrentUser();
         if (firebaseUser == null) return;
@@ -119,15 +139,19 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        String role = "Patient";
+        // Role selection
+        String role = "PATIENT";
         int checkedId = toggleRole.getCheckedButtonId();
-        if (checkedId == R.id.btnDoctor) role = "Doctor";
-        else if (checkedId == R.id.btnVolunteer) role = "Volunteer";
+        if (checkedId == R.id.btnDoctor) role = "DOCTOR";
+        else if (checkedId == R.id.btnVolunteer) role = "VOLUNTEER";
 
+        // Chronic conditions
         List<String> conditions = new ArrayList<>();
         for (int i = 0; i < chipGroupConditions.getChildCount(); i++) {
             Chip chip = (Chip) chipGroupConditions.getChildAt(i);
-            if (chip.isChecked()) conditions.add(chip.getText().toString());
+            if (chip.isChecked()) {
+                conditions.add(chip.getText().toString());
+            }
         }
 
         String uid = firebaseUser.getUid();
@@ -143,15 +167,15 @@ public class RegisterActivity extends AppCompatActivity {
                         Integer.parseInt(etHeight.getText().toString()));
         user.put("chronicConditions", conditions);
 
+        final String finalRole = role;
+
         usersRef.child(uid)
                 .setValue(user)
-                .addOnSuccessListener(aVoid -> {
-                    startActivity(new Intent(this, HomePage.class));
-                    finish();
-                })
+                .addOnSuccessListener(aVoid -> redirectToHomeBasedOnRole(finalRole))
                 .addOnFailureListener(e -> {
                     Log.e("DB_ERROR", e.getMessage());
                     Toast.makeText(this, "Save failed", Toast.LENGTH_SHORT).show();
                 });
+
     }
 }
