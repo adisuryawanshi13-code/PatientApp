@@ -57,9 +57,10 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvGreeting"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hello, Itachi"
+                        android:text="Hello"
                         android:textColor="#111827"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -84,13 +85,13 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginEnd="16dp"
-                        android:src="@android:drawable/ic_menu_search"
+                        android:src="@drawable/search"
                         app:tint="#4B5563" />
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@android:drawable/ic_popup_reminder"
+                        android:src="@drawable/bell"
                         app:tint="#4B5563" />
                 </LinearLayout>
             </RelativeLayout>
@@ -167,16 +168,30 @@
                     android:layout_margin="6dp"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="1dp">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@android:drawable/ic_menu_agenda"
-                            app:tint="#1A56DB" />
+
+                        <!-- ICON WITH CIRCULAR SVG BACKGROUND -->
+                        <FrameLayout
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_icon_circle"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:src="@drawable/document"
+                                app:tint="#1A56DB" />
+
+                        </FrameLayout>
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -185,8 +200,11 @@
                             android:textSize="12sp"
                             android:textColor="#374151"
                             android:textStyle="bold" />
+
                     </LinearLayout>
+
                 </androidx.cardview.widget.CardView>
+
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_medicines"
@@ -201,11 +219,25 @@
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@android:drawable/ic_menu_manage"
-                            app:tint="#10B981" />
+
+                        <!-- ICON WITH CIRCULAR SVG BACKGROUND -->
+                        <FrameLayout
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_icon_circle"
+                            android:backgroundTint="#DEFFDF"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:src="@drawable/medication"
+                                app:tint="#43A047" />
+
+                        </FrameLayout>
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -214,6 +246,7 @@
                             android:textSize="12sp"
                             android:textColor="#374151"
                             android:textStyle="bold" />
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -230,11 +263,25 @@
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@android:drawable/ic_menu_view"
-                            app:tint="#9333EA" />
+
+                        <!-- ICON WITH CIRCULAR SVG BACKGROUND -->
+                        <FrameLayout
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_icon_circle"
+                            android:gravity="center"
+                            android:backgroundTint="#F5D9FD">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:src="@drawable/lab"
+                                app:tint="#8E24AA" />
+
+                        </FrameLayout>
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -243,6 +290,7 @@
                             android:textSize="12sp"
                             android:textColor="#374151"
                             android:textStyle="bold" />
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -259,11 +307,25 @@
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@android:drawable/ic_menu_gallery"
-                            app:tint="#EA580C" />
+
+                        <!-- ICON WITH CIRCULAR SVG BACKGROUND -->
+                        <FrameLayout
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_icon_circle"
+                            android:gravity="center"
+                            android:backgroundTint="#FACFC2">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:src="@drawable/endocrinology"
+                                app:tint="#F4511E" />
+
+                        </FrameLayout>
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -272,6 +334,7 @@
                             android:textSize="12sp"
                             android:textColor="#374151"
                             android:textStyle="bold" />
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -492,15 +555,20 @@
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="72dp"
-        android:background="#FFFFFF"
+        android:background="@android:color/white"
+
         app:elevation="8dp"
-        app:itemIconSize="24dp"
-        app:itemIconTint="#1A56DB"
-        app:itemTextColor="#1A56DB"
         app:labelVisibilityMode="labeled"
+
+        app:itemIconSize="24dp"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
+        app:itemBackground="@drawable/bottom_nav_item_bg"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:menu="@menu/bottom_nav_menu" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

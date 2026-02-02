@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.*;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButtonToggleGroup;
@@ -44,19 +46,41 @@ public class RegisterActivity extends AppCompatActivity {
         chipGroupConditions = findViewById(R.id.chipGroup);
         btnComplete = findViewById(R.id.btnComplete);
 
-        // ---------- FORCE AUTH (NO CRASH GUARANTEE) ----------
-        if (auth.getCurrentUser() == null) {
-            auth.signInAnonymously()
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Auth failed", Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
-        }
-
-        // ---------- SPINNERS ----------
         setupSpinners();
 
+        // 🔥 AUTH + DB CHECK (FINAL LOGIC)
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user == null) {
+            auth.signInAnonymously()
+                    .addOnSuccessListener(authResult -> checkIfUserRegistered())
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Auth failed", Toast.LENGTH_SHORT).show()
+                    );
+        } else {
+            checkIfUserRegistered();
+        }
+
         btnComplete.setOnClickListener(v -> saveUserData());
+    }
+
+    private void checkIfUserRegistered() {
+        String uid = auth.getCurrentUser().getUid();
+
+        usersRef.child(uid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            startActivity(new Intent(RegisterActivity.this, HomePage.class));
+                            finish();
+                        }
+                        // else: stay on register
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                });
     }
 
     private void setupSpinners() {
@@ -79,10 +103,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void saveUserData() {
         FirebaseUser firebaseUser = auth.getCurrentUser();
-        if (firebaseUser == null) {
-            Toast.makeText(this, "Auth error. Restart app.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (firebaseUser == null) return;
 
         String fullName = etFullName.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
@@ -98,13 +119,11 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // Role
         String role = "Patient";
         int checkedId = toggleRole.getCheckedButtonId();
         if (checkedId == R.id.btnDoctor) role = "Doctor";
         else if (checkedId == R.id.btnVolunteer) role = "Volunteer";
 
-        // Conditions
         List<String> conditions = new ArrayList<>();
         for (int i = 0; i < chipGroupConditions.getChildCount(); i++) {
             Chip chip = (Chip) chipGroupConditions.getChildAt(i);
@@ -119,10 +138,10 @@ public class RegisterActivity extends AppCompatActivity {
         user.put("role", role);
         user.put("gender", spinnerGender.getSelectedItem().toString());
         user.put("bloodGroup", spinnerBloodGroup.getSelectedItem().toString());
-        user.put("heightCm", etHeight.getText().toString().isEmpty() ? 0 :
-                Integer.parseInt(etHeight.getText().toString()));
+        user.put("heightCm",
+                etHeight.getText().toString().isEmpty() ? 0 :
+                        Integer.parseInt(etHeight.getText().toString()));
         user.put("chronicConditions", conditions);
-        user.put("profileCompleted", true);
 
         usersRef.child(uid)
                 .setValue(user)

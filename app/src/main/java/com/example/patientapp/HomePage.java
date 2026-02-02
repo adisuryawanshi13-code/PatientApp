@@ -24,6 +24,14 @@ import androidx.cardview.widget.CardView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
@@ -31,7 +39,13 @@ public class HomePage extends AppCompatActivity {
 
     private View homeLayout, eventsLayout;
     private LinearLayout eventsList;
+    private TextView tvGreeting;
+
     private TextView tvEmpty;
+
+    FirebaseAuth auth;
+    DatabaseReference userRef;
+
 
     private final ActivityResultLauncher<Intent> folderLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -54,7 +68,29 @@ public class HomePage extends AppCompatActivity {
         homeLayout = findViewById(R.id.home_layout);
         eventsLayout = findViewById(R.id.events_layout);
         eventsList = findViewById(R.id.events_list_container);
+
+        tvGreeting = findViewById(R.id.tvGreeting);
         tvEmpty = findViewById(R.id.tv_empty);
+
+        auth = FirebaseAuth.getInstance();
+
+        FirebaseUser currentUser = auth.getCurrentUser();
+
+        if (currentUser == null) {
+            // User not logged in → redirect to login
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+
+        String uid = currentUser.getUid();
+
+
+        userRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(uid);
+
+        loadUserName();
 
         ImageView qrImageView = findViewById(R.id.patient_qr_code);
         generatePatientQR(qrImageView, "Patient: Itachi | ABHA: 12-3456-7890-1234");
@@ -87,6 +123,30 @@ public class HomePage extends AppCompatActivity {
             }
         });
     }
+
+    private void loadUserName() {
+
+        userRef.child("fullName")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        if (snapshot.exists()) {
+                            String fullName = snapshot.getValue(String.class);
+                            tvGreeting.setText("Hello, " + fullName);
+                        } else {
+                            tvGreeting.setText("Hello");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        tvGreeting.setText("Hello");
+                    }
+                });
+    }
+
+
 
     private void addFolderCard(String name, String date, String hospital, String category, String desc) {
         if (tvEmpty != null) tvEmpty.setVisibility(View.GONE);
