@@ -84,14 +84,15 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginEnd="16dp"
-                        android:src="@android:drawable/ic_menu_search"
-                        app:tint="#4B5563" />
+                        android:src="@drawable/search"
+                        android:tint="@android:color/black"/>
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@android:drawable/ic_popup_reminder"
-                        app:tint="#4B5563" />
+                        android:layout_marginEnd="16dp"
+                        android:src="@drawable/bell"
+                        android:tint="@android:color/black" />
                 </LinearLayout>
             </RelativeLayout>
 
@@ -167,54 +168,86 @@
                     android:layout_margin="6dp"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="1dp">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@android:drawable/ic_menu_agenda"
-                            app:tint="#1A56DB" />
+
+                        <!-- Circle background -->
+                        <FrameLayout
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_icon_circle"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:src="@drawable/document"
+                                app:tint="#1A56DB" />
+                        </FrameLayout>
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginTop="8dp"
                             android:text="Health Records"
                             android:textSize="12sp"
                             android:textColor="#374151"
                             android:textStyle="bold" />
+
                     </LinearLayout>
+
                 </androidx.cardview.widget.CardView>
 
+
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/card_medicines"
+                    android:id="@+id/card_medicine"
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_columnWeight="1"
                     android:layout_margin="6dp"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="1dp">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@android:drawable/ic_menu_manage"
-                            app:tint="#10B981" />
+
+                        <!-- Circle background -->
+                        <FrameLayout
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_icon_circle"
+                            android:gravity="center"
+                            android:backgroundTint="#E6FFE7">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:src="@drawable/medication"
+                                app:tint="#43A047 " />
+                        </FrameLayout>
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginTop="8dp"
                             android:text="My Medicines"
                             android:textSize="12sp"
                             android:textColor="#374151"
                             android:textStyle="bold" />
+
                     </LinearLayout>
+
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
@@ -225,25 +258,41 @@
                     android:layout_margin="6dp"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="1dp">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@android:drawable/ic_menu_view"
-                            app:tint="#9333EA" />
+
+                        <!-- Circle background -->
+                        <FrameLayout
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_icon_circle"
+                            android:gravity="center"
+                            android:backgroundTint="#F3CDFD">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:src="@drawable/lab"
+                                app:tint="#8E24AA" />
+                        </FrameLayout>
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginTop="8dp"
                             android:text="Lab Reports"
                             android:textSize="12sp"
                             android:textColor="#374151"
                             android:textStyle="bold" />
+
                     </LinearLayout>
+
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
@@ -254,25 +303,41 @@
                     android:layout_margin="6dp"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="1dp">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@android:drawable/ic_menu_gallery"
-                            app:tint="#EA580C" />
+
+                        <!-- Circle background -->
+                        <FrameLayout
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_icon_circle"
+                            android:gravity="center"
+                            android:backgroundTint="#FADCD2">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:src="@drawable/endocrinology"
+                                app:tint="#F4511E" />
+                        </FrameLayout>
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginTop="8dp"
                             android:text="X-Rays"
                             android:textSize="12sp"
                             android:textColor="#374151"
                             android:textStyle="bold" />
+
                     </LinearLayout>
+
                 </androidx.cardview.widget.CardView>
 
             </GridLayout>
@@ -495,12 +560,13 @@
         android:background="#FFFFFF"
         app:elevation="8dp"
         app:itemIconSize="24dp"
-        app:itemIconTint="#1A56DB"
-        app:itemTextColor="#1A56DB"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:itemActiveIndicatorStyle="@null"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

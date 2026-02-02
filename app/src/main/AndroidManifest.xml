@@ -17,16 +17,17 @@
         android:theme="@style/Theme.PatientApp">
         <activity
             android:name=".HomePage"
-            android:exported="false" />
+            android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
         <!-- 1. Login Screen -->
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:exported="false">
         </activity> <!-- 2. Home Screen -->
         <activity
             android:name=".MainActivity"

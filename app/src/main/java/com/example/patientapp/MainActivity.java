@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "CLOUDINARY_DEBUG";
 
-    // 🔴 REPLACE THESE
     private static final String CLOUD_NAME = "dwwdy3bk2";
     private static final String UPLOAD_PRESET = "android_pdf_upload";
 
