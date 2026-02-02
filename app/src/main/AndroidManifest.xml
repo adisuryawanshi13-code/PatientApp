@@ -16,7 +16,7 @@
 
         <!-- ✅ NEW: Demo screen opens first -->
         <activity
-            android:name=".DemoActivity"
+            android:name=".RegisterActivity"
             android:exported="true">
 
             <intent-filter>

@@ -49,7 +49,7 @@ public class HomePage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_home_page);
 
         homeLayout = findViewById(R.id.home_layout);
         eventsLayout = findViewById(R.id.events_layout);
