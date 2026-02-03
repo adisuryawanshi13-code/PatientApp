@@ -26,9 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- Login Screen -->
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" /> <!-- Home Screen -->
+
         <activity
             android:name=".HomePage"
             android:exported="false" />
