@@ -108,10 +108,11 @@
                                 android:gravity="top">
 
                                 <TextView
+                                    android:id="@+id/tvName"
+                                    android:text="Name"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Johnathan Doe, 45"
                                     android:textColor="#111827"
                                     android:textSize="19sp"
                                     android:textStyle="bold" />
@@ -133,12 +134,14 @@
                             </LinearLayout>
 
                             <TextView
+                                android:id="@+id/tvVitals"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="Male • 182cm • 78kg • Blood Type O+"
                                 android:textColor="#6B7280"
-                                android:textSize="12sp" />
+                                android:textSize="12sp"
+                                android:text="- - - - " />
+
                         </LinearLayout>
                     </LinearLayout>
 
@@ -463,6 +466,10 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="hey"/>
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

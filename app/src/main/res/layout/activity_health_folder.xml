@@ -1,78 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#FAFAFA"
+    tools:context=".HealthFolderActivity">
 
-    <!-- Header Toolbar -->
-    <RelativeLayout
-        android:id="@+id/header"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:paddingHorizontal="16dp"
-        app:layout_constraintTop_toTopOf="parent">
-        <ImageView
-            android:id="@+id/btn_back"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_centerVertical="true"
-            android:src="@android:drawable/ic_menu_revert" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="New Health Folder"
-            android:textStyle="bold"
-            android:textSize="18sp" />
-    </RelativeLayout>
-
-    <ScrollView
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/health_folder_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="20dp"
-        app:layout_constraintTop_toBottomOf="@id/header"
-        app:layout_constraintBottom_toTopOf="@id/btn_create_folder">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Create Folder"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <!-- Input Fields -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Folder Name" android:layout_marginTop="20dp" android:textStyle="bold"/>
-            <EditText android:id="@+id/et_folder_name" android:layout_width="match_parent" android:layout_height="50dp" android:hint="e.g. Checkup 2024" android:background="@android:drawable/editbox_background"/>
-
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Date of Visit" android:layout_marginTop="16dp" android:textStyle="bold"/>
-            <EditText android:id="@+id/et_date" android:layout_width="match_parent" android:layout_height="50dp" android:hint="Select date" android:focusable="false" android:background="@android:drawable/editbox_background"/>
-
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hospital / Location" android:layout_marginTop="16dp" android:textStyle="bold"/>
-            <EditText android:id="@+id/et_hospital" android:layout_width="match_parent" android:layout_height="50dp" android:hint="e.g. City General" android:background="@android:drawable/editbox_background"/>
-
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select Category" android:layout_marginTop="16dp" android:textStyle="bold"/>
-            <Spinner android:id="@+id/spinner_category" android:layout_width="match_parent" android:layout_height="50dp" />
-
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Description (Optional)" android:layout_marginTop="16dp" android:textStyle="bold"/>
-            <EditText android:id="@+id/et_description" android:layout_width="match_parent" android:layout_height="100dp" android:gravity="top" android:hint="Notes..." android:padding="10dp" android:background="@android:drawable/editbox_background"/>
-        </LinearLayout>
-    </ScrollView>
-
-    <Button
-        android:id="@+id/btn_create_folder"
+    <!-- BOTTOM NAVIGATION -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_margin="20dp"
-        android:text="Create Health Folder"
-        android:backgroundTint="#1A56DB"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:layout_height="72dp"
+        android:background="@android:color/white"
+
+        app:elevation="8dp"
+        app:labelVisibilityMode="labeled"
+
+        app:itemIconSize="24dp"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
+        app:itemBackground="@drawable/bottom_nav_item_bg"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

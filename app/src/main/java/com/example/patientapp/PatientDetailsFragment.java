@@ -19,11 +19,9 @@ import com.google.firebase.database.ValueEventListener;
 
 public class PatientDetailsFragment extends Fragment {
 
-    private TextView tvName, tvGender, tvBloodGroup, tvHeight;
+    private TextView tvName, tvVitals;
 
-    public PatientDetailsFragment() {
-        // Required empty public constructor
-    }
+    public PatientDetailsFragment() {}
 
     @Nullable
     @Override
@@ -33,20 +31,17 @@ public class PatientDetailsFragment extends Fragment {
             @Nullable Bundle savedInstanceState
     ) {
 
-        // 1️⃣ Inflate layout
         View view = inflater.inflate(
                 R.layout.fragment_patient_details,
                 container,
                 false
         );
 
-        // 2️⃣ Bind views
+        // Bind views
         tvName = view.findViewById(R.id.tvName);
-        tvGender = view.findViewById(R.id.tvGender);
-        tvBloodGroup = view.findViewById(R.id.tvBloodGroup);
-        tvHeight = view.findViewById(R.id.tvHeight);
+        tvVitals = view.findViewById(R.id.tvVitals);
 
-        // 3️⃣ Get patient UID from arguments
+        // Get UID
         if (getArguments() != null) {
             String patientUid = getArguments().getString("PATIENT_UID");
             fetchPatientDetails(patientUid);
@@ -55,7 +50,7 @@ public class PatientDetailsFragment extends Fragment {
         return view;
     }
 
-    // 🔥 BACKEND: Fetch patient data
+    // 🔥 FETCH FROM REALTIME DB
     private void fetchPatientDetails(String patientUid) {
 
         DatabaseReference ref = FirebaseDatabase.getInstance()
@@ -65,11 +60,10 @@ public class PatientDetailsFragment extends Fragment {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d("PATIENT_DEBUG", "UID path exists: " + snapshot.exists());
-                Log.d("PATIENT_DEBUG", "Snapshot key: " + snapshot.getKey());
 
                 if (!snapshot.exists()) {
                     tvName.setText("Patient not found");
+                    tvVitals.setText("-");
                     return;
                 }
 
@@ -78,17 +72,36 @@ public class PatientDetailsFragment extends Fragment {
                 String bloodGroup = snapshot.child("bloodGroup").getValue(String.class);
                 Long height = snapshot.child("heightCm").getValue(Long.class);
 
+                // Name
                 tvName.setText(name != null ? name : "-");
-                tvGender.setText(gender != null ? gender : "-");
-                tvBloodGroup.setText(bloodGroup != null ? bloodGroup : "-");
-                tvHeight.setText(height != null ? height + " cm" : "-");
+
+                // Build vitals string safely
+                StringBuilder vitalsBuilder = new StringBuilder();
+
+                if (gender != null && !gender.isEmpty()) {
+                    vitalsBuilder.append(gender);
+                }
+
+                if (height != null) {
+                    if (vitalsBuilder.length() > 0) vitalsBuilder.append(" • ");
+                    vitalsBuilder.append(height).append("cm");
+                }
+
+                if (bloodGroup != null && !bloodGroup.isEmpty()) {
+                    if (vitalsBuilder.length() > 0) vitalsBuilder.append(" • ");
+                    vitalsBuilder.append(bloodGroup);
+                }
+
+                tvVitals.setText(
+                        vitalsBuilder.length() > 0 ? vitalsBuilder.toString() : "-"
+                );
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 tvName.setText("Error loading data");
+                tvVitals.setText("-");
             }
-
         });
     }
 }

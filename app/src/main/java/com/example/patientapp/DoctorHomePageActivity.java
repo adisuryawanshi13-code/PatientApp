@@ -82,7 +82,7 @@ public class DoctorHomePageActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putString("PATIENT_UID", patientUid);
 
-        PatientDetailsFragment fragment = new PatientDetailsFragment();
+        PatientRecordsFragment fragment = new PatientRecordsFragment();
         fragment.setArguments(bundle);
 
         getSupportFragmentManager()

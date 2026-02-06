@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA">
+
+    <!-- Header -->
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="12dp"
+            android:padding="6dp"
+            android:src="@android:drawable/ic_menu_revert"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="New Health Folder"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#111827"/>
+    </RelativeLayout>
+
+    <!-- Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintBottom_toTopOf="@id/btnCreateFolder">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create Folder"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#111827"/>
+
+            <!-- Folder Name -->
+            <TextView
+                android:text="Folder Name"
+                android:layout_marginTop="16dp"
+                android:textSize="12sp"
+                android:textColor="#374151"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/etFolderName"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="e.g. Checkup 2024"
+                android:background="@android:drawable/edit_text"
+                android:padding="12dp"/>
+
+            <!-- Date -->
+            <TextView
+                android:text="Date of Visit"
+                android:layout_marginTop="16dp"
+                android:textSize="12sp"
+                android:textColor="#374151"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/etDate"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Select date"
+                android:focusable="false"
+                android:clickable="true"
+                android:background="@android:drawable/edit_text"
+                android:padding="12dp"/>
+
+            <!-- Hospital -->
+            <TextView
+                android:text="Hospital / Location"
+                android:layout_marginTop="16dp"
+                android:textSize="12sp"
+                android:textColor="#374151"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/etHospital"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="e.g. City General"
+                android:background="@android:drawable/edit_text"
+                android:padding="12dp"/>
+
+            <!-- Category -->
+            <TextView
+                android:text="Select Category"
+                android:layout_marginTop="16dp"
+                android:textSize="12sp"
+                android:textColor="#374151"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Spinner
+                android:id="@+id/spCategory"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"/>
+
+            <!-- Description -->
+            <TextView
+                android:text="Description (Optional)"
+                android:layout_marginTop="16dp"
+                android:textSize="12sp"
+                android:textColor="#374151"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/etDescription"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:hint="Notes..."
+                android:gravity="top"
+                android:background="@android:drawable/edit_text"
+                android:padding="12dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Button -->
+    <Button
+        android:id="@+id/btnCreateFolder"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:text="Create Health Folder"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#1D4ED8"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
