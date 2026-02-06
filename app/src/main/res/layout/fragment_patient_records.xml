@@ -15,7 +15,6 @@
         android:paddingHorizontal="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Back Button (Going Back Button) -->
         <ImageView
             android:id="@+id/btn_back_records"
             android:layout_width="36dp"
@@ -289,15 +288,35 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Vitals Grid -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Vitals Header with ADD Button -->
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:text="Recent Vitals"
-                android:textColor="#111827"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="28dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="Recent Vitals"
+                    android:textColor="#111827"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_add_vitals"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_alignParentEnd="true"
+                    android:background="@android:drawable/btn_default"
+                    android:backgroundTint="#1A56DB"
+                    android:text="Add"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
 
             <GridLayout
                 android:layout_width="match_parent"
