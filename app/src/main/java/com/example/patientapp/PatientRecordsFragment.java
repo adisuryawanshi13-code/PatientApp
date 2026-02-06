@@ -10,21 +10,27 @@ import androidx.fragment.app.Fragment;
 
 public class PatientRecordsFragment extends Fragment {
 
-    public PatientRecordsFragment() {
-        // Required empty public constructor
-    }
-
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the professional records layout
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_patient_records, container, false);
 
-        // Handle the Back Button click
+        // Back button to home
         view.findViewById(R.id.btn_back_records).setOnClickListener(v -> {
             if (getActivity() != null) {
-                // Hide the container and return to the main home screen
                 getActivity().findViewById(R.id.doctor_fragment_container).setVisibility(View.GONE);
                 getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+
+        // "Add Vitals" button click logic - Opens the Camp Activity screen
+        view.findViewById(R.id.btn_add_vitals).setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.doctor_fragment_container, new AddVitalsFragment())
+                        .addToBackStack(null)
+                        .commit();
             }
         });
 
