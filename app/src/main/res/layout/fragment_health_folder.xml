@@ -50,14 +50,13 @@
             android:padding="20dp">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="Create Folder"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#111827"/>
+                android:textColor="#111827"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
-            <!-- Folder Name -->
             <TextView
                 android:text="Folder Name"
                 android:layout_marginTop="16dp"
@@ -74,7 +73,6 @@
                 android:background="@android:drawable/edit_text"
                 android:padding="12dp"/>
 
-            <!-- Date -->
             <TextView
                 android:text="Date of Visit"
                 android:layout_marginTop="16dp"
@@ -93,7 +91,6 @@
                 android:background="@android:drawable/edit_text"
                 android:padding="12dp"/>
 
-            <!-- Hospital -->
             <TextView
                 android:text="Hospital / Location"
                 android:layout_marginTop="16dp"
@@ -110,7 +107,6 @@
                 android:background="@android:drawable/edit_text"
                 android:padding="12dp"/>
 
-            <!-- Category -->
             <TextView
                 android:text="Select Category"
                 android:layout_marginTop="16dp"
@@ -124,7 +120,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"/>
 
-            <!-- Description -->
             <TextView
                 android:text="Description (Optional)"
                 android:layout_marginTop="16dp"
@@ -145,7 +140,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom Button -->
     <Button
         android:id="@+id/btnCreateFolder"
         android:layout_width="0dp"
