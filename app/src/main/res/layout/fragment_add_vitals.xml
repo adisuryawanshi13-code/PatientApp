@@ -59,26 +59,10 @@
             android:padding="20dp"
             android:paddingBottom="40dp">
 
-            <!-- Scan Button -->
-            <androidx.appcompat.widget.AppCompatButton
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:background="@android:drawable/btn_default"
-                android:backgroundTint="#1A56DB"
-                android:drawableStart="@android:drawable/ic_menu_camera"
-                android:drawablePadding="16dp"
-                android:paddingStart="24dp"
-                android:text="Scan Patient QR"
-                android:textAllCaps="false"
-                android:textColor="#FFFFFF"
-                android:textSize="17sp"
-                android:textStyle="bold" />
-
             <!-- Vaccination Status -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
                 android:text="Vaccination Status"
                 android:textColor="#111827"
                 android:textSize="18sp"
@@ -127,34 +111,42 @@
                 <!-- BP Input -->
                 <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:padding="4dp" android:layout_columnWeight="1">
                     <TextView android:text="BP (mmHg)" android:textColor="#64748B" android:textSize="13sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <EditText android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="8dp" android:background="@android:drawable/editbox_background_normal" android:hint="120/80" android:paddingHorizontal="16dp" android:backgroundTint="#F1F5F9" android:textColor="#111827" android:inputType="text"/>
+                    <EditText
+                        android:id="@+id/et_bp"
+                        android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="8dp" android:background="@android:drawable/editbox_background_normal" android:hint="120/80" android:paddingHorizontal="16dp" android:backgroundTint="#F1F5F9" android:textColor="#111827" android:inputType="text"/>
                 </LinearLayout>
 
                 <!-- Temp Input -->
                 <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:padding="4dp" android:layout_columnWeight="1">
                     <TextView android:text="Temp (°C)" android:textColor="#64748B" android:textSize="13sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <EditText android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="8dp" android:background="@android:drawable/editbox_background_normal" android:hint="36.5" android:paddingHorizontal="16dp" android:backgroundTint="#F1F5F9" android:textColor="#111827" android:inputType="numberDecimal"/>
+                    <EditText
+                        android:id="@+id/et_temp"
+                        android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="8dp" android:background="@android:drawable/editbox_background_normal" android:hint="36.5" android:paddingHorizontal="16dp" android:backgroundTint="#F1F5F9" android:textColor="#111827" android:inputType="numberDecimal"/>
                 </LinearLayout>
 
                 <!-- Pulse Input -->
                 <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" android:padding="4dp" android:layout_columnWeight="1">
                     <TextView android:text="Pulse (BPM)" android:textColor="#64748B" android:textSize="13sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <EditText android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="8dp" android:background="@android:drawable/editbox_background_normal" android:hint="72" android:paddingHorizontal="16dp" android:backgroundTint="#F1F5F9" android:textColor="#111827" android:inputType="number"/>
+                    <EditText
+                        android:id="@+id/et_pulse"
+                        android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="8dp" android:background="@android:drawable/editbox_background_normal" android:hint="72" android:paddingHorizontal="16dp" android:backgroundTint="#F1F5F9" android:textColor="#111827" android:inputType="number"/>
                 </LinearLayout>
 
                 <!-- SPO2 Input -->
                 <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" android:padding="4dp" android:layout_columnWeight="1">
                     <TextView android:text="SpO2 (%)" android:textColor="#64748B" android:textSize="13sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <EditText android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="8dp" android:background="@android:drawable/editbox_background_normal" android:hint="98" android:paddingHorizontal="16dp" android:backgroundTint="#F1F5F9" android:textColor="#111827" android:inputType="number"/>
+                    <EditText
+                        android:id="@+id/et_spo2"
+                        android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="8dp" android:background="@android:drawable/editbox_background_normal" android:hint="98" android:paddingHorizontal="16dp" android:backgroundTint="#F1F5F9" android:textColor="#111827" android:inputType="number"/>
                 </LinearLayout>
             </GridLayout>
 
-            <!-- Save Button (Properly implemented) -->
+            <!-- Save Button -->
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_save_record"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="40dp"
                 android:background="@android:drawable/btn_default"
                 android:backgroundTint="#EFF6FF"
                 android:drawableStart="@android:drawable/ic_menu_save"
@@ -166,71 +158,12 @@
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
-            <!-- Upcoming Camps Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:text="Upcoming Medical Camps"
-                android:textColor="#111827"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="1dp">
-                <RelativeLayout android:padding="16dp" android:layout_width="match_parent" android:layout_height="wrap_content">
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/date_badge"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        app:cardBackgroundColor="#EFF6FF"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:text="OCT\n24" android:gravity="center" android:textColor="#1A56DB" android:textStyle="bold" android:textSize="12sp"/>
-                    </androidx.cardview.widget.CardView>
-                    <LinearLayout android:layout_toEndOf="@id/date_badge" android:layout_marginStart="16dp" android:orientation="vertical" android:layout_centerVertical="true" android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <TextView android:text="Central Health Drive" android:textColor="#111827" android:textStyle="bold" android:textSize="15sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                        <TextView android:text="Downtown Community Center" android:textColor="#64748B" android:textSize="12sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"/>
-                    </LinearLayout>
-                    <ImageView android:layout_alignParentEnd="true" android:layout_centerVertical="true" android:src="@android:drawable/ic_media_play" android:layout_width="20dp" android:layout_height="20dp" app:tint="#94A3B8"/>
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="20dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="1dp">
-                <RelativeLayout android:padding="16dp" android:layout_width="match_parent" android:layout_height="wrap_content">
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/date_badge2"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        app:cardBackgroundColor="#F8FAFC"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:text="NOV\n02" android:gravity="center" android:textColor="#64748B" android:textStyle="bold" android:textSize="12sp"/>
-                    </androidx.cardview.widget.CardView>
-                    <LinearLayout android:layout_toEndOf="@id/date_badge2" android:layout_marginStart="16dp" android:orientation="vertical" android:layout_centerVertical="true" android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <TextView android:text="Rural Pediatric Clinic" android:textColor="#111827" android:textStyle="bold" android:textSize="15sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                        <TextView android:text="Oak Valley Suburb" android:textColor="#64748B" android:textSize="12sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"/>
-                    </LinearLayout>
-                    <ImageView android:layout_alignParentEnd="true" android:layout_centerVertical="true" android:src="@android:drawable/ic_media_play" android:layout_width="20dp" android:layout_height="20dp" app:tint="#94A3B8"/>
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
             <!-- Sync Indicator Footer -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="60dp"
                 android:orientation="horizontal">
                 <View android:layout_width="8dp" android:layout_height="8dp" android:background="@android:drawable/presence_online" android:backgroundTint="#10B981"/>
                 <TextView
