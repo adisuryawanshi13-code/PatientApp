@@ -115,25 +115,26 @@
                 app:cardCornerRadius="20dp"
                 app:cardElevation="6dp">
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnScanQr"
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:gravity="center"
-                    android:padding="16dp"
-                    android:drawableStart="@android:drawable/ic_menu_camera"
-                    android:drawableTint="#FFFFFF"
-                    android:drawablePadding="12dp"
-                    android:text="Scan Patient QR"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textAllCaps="false" />
             </androidx.cardview.widget.CardView>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnScanQr"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@android:color/transparent"
+                android:clickable="true"
+                android:drawableStart="@android:drawable/ic_menu_camera"
+                android:drawablePadding="12dp"
+                android:drawableTint="#FFFFFF"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="Scan Patient QR"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
