@@ -1,14 +1,19 @@
 package com.example.patientapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,8 +33,12 @@ public class FoldersListFragment extends Fragment {
     private FolderAdapter adapter;
     private List<FolderModel> folderList;
 
+    private Button createFolder;
+
     private FirebaseAuth auth;
     private DatabaseReference folderRef;
+
+    private View rootView;
 
     @Nullable
     @Override
@@ -39,10 +48,31 @@ public class FoldersListFragment extends Fragment {
             @Nullable Bundle savedInstanceState
     ) {
 
-        View view = inflater.inflate(R.layout.fragment_folders_list, container, false);
+        rootView = inflater.inflate(R.layout.fragment_folders_list, container, false);
+        requireActivity()
+                .getOnBackPressedDispatcher()
+                .addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
 
-        recyclerFolders = view.findViewById(R.id.recyclerFolders);
-        recyclerFolders.setLayoutManager(new LinearLayoutManager(getContext()));
+                        FragmentManager childFm = getChildFragmentManager();
+
+                        if (childFm.getBackStackEntryCount() > 0) {
+                            // Pop HealthFolderFragment
+                            childFm.popBackStack();
+                        } else {
+                            // Let activity handle back (switch tab / exit)
+                            setEnabled(false);
+                            requireActivity().onBackPressed();
+                        }
+                    }
+                });
+
+
+        recyclerFolders = rootView.findViewById(R.id.recyclerFolders);
+        recyclerFolders.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        createFolder = rootView.findViewById(R.id.createFolder);
 
         folderList = new ArrayList<>();
         adapter = new FolderAdapter(folderList);
@@ -51,8 +81,8 @@ public class FoldersListFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
 
         if (auth.getCurrentUser() == null) {
-            Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
-            return view;
+            Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+            return rootView;
         }
 
         String userId = auth.getCurrentUser().getUid();
@@ -64,7 +94,48 @@ public class FoldersListFragment extends Fragment {
 
         loadFolders();
 
-        return view;
+        createFolder.setOnClickListener(v -> openHealthFolderFragment());
+
+        setupBackStackListener();
+
+        return rootView;
+    }
+
+    private void openHealthFolderFragment() {
+
+        View container = rootView.findViewById(R.id.folder_fragment_container);
+        View recycler = rootView.findViewById(R.id.recyclerFolders);
+        View button = rootView.findViewById(R.id.createFolder);
+
+        container.setVisibility(View.VISIBLE);
+        recycler.setVisibility(View.GONE);
+        button.setVisibility(View.GONE);
+
+        getChildFragmentManager()
+                .beginTransaction()
+                .replace(
+                        R.id.folder_fragment_container,
+                        new HealthFolderFragment()
+                )
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void setupBackStackListener() {
+
+        getChildFragmentManager().addOnBackStackChangedListener(() -> {
+
+            if (getChildFragmentManager().getBackStackEntryCount() == 0) {
+
+                View container = rootView.findViewById(R.id.folder_fragment_container);
+                View recycler = rootView.findViewById(R.id.recyclerFolders);
+                View button = rootView.findViewById(R.id.createFolder);
+
+                container.setVisibility(View.GONE);
+                recycler.setVisibility(View.VISIBLE);
+                button.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void loadFolders() {
@@ -88,7 +159,7 @@ public class FoldersListFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(
-                        getContext(),
+                        requireContext(),
                         "Failed to load folders",
                         Toast.LENGTH_SHORT
                 ).show();

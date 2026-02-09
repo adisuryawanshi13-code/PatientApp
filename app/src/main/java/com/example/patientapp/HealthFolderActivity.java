@@ -16,7 +16,7 @@ public class HealthFolderActivity extends AppCompatActivity {
 
         // Load fragment ONLY once
         if (savedInstanceState == null) {
-            loadFragment(new HealthFolderFragment());
+            loadFragment(new FoldersListFragment());
         }
     }
 
