@@ -2,6 +2,7 @@ package com.example.patientapp;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +17,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HealthFolderFragment extends Fragment {
 
+    // UI
     private EditText etFolderName, etDate, etHospital, etDescription;
     private Spinner spCategory;
     private Button btnCreateFolder;
-    private ImageView btnBack;
 
-    public HealthFolderFragment() {}
+    // Firebase
+    private FirebaseAuth auth;
+    private DatabaseReference folderRef;
 
     @Nullable
     @Override
@@ -35,93 +44,113 @@ public class HealthFolderFragment extends Fragment {
             @Nullable Bundle savedInstanceState
     ) {
 
-        View view = inflater.inflate(
-                R.layout.fragment_health_folder,
-                container,
-                false
-        );
+        View view = inflater.inflate(R.layout.fragment_health_folder, container, false);
 
-        // Bind views
+        // Bind UI
         etFolderName = view.findViewById(R.id.etFolderName);
         etDate = view.findViewById(R.id.etDate);
         etHospital = view.findViewById(R.id.etHospital);
         etDescription = view.findViewById(R.id.etDescription);
         spCategory = view.findViewById(R.id.spCategory);
         btnCreateFolder = view.findViewById(R.id.btnCreateFolder);
-        btnBack = view.findViewById(R.id.btnBack);
+        ImageView btnBack = view.findViewById(R.id.btnBack);
 
-        setupCategorySpinner();
-        setupDatePicker();
+        // Firebase
+        auth = FirebaseAuth.getInstance();
+        folderRef = FirebaseDatabase.getInstance().getReference("folder");
 
-        btnCreateFolder.setOnClickListener(v -> {
-            // TEMP: just show data
-            Toast.makeText(
-                    requireContext(),
-                    "Health Folder Created (TEMP)",
-                    Toast.LENGTH_SHORT
-            ).show();
-        });
+        // Spinner data
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                new String[]{"Checkup", "Prescription", "Lab Report", "Scan", "Other"}
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCategory.setAdapter(adapter);
 
-        btnBack.setOnClickListener(v -> {
-            requireActivity().onBackPressed();
-        });
+        // Date picker
+        etDate.setOnClickListener(v -> openDatePicker());
+
+        // Back
+        btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
+
+        // Create folder
+        btnCreateFolder.setOnClickListener(v -> createFolder());
 
         return view;
     }
 
-    // -----------------------------
-    // Spinner setup
-    // -----------------------------
-    private void setupCategorySpinner() {
-
-        String[] categories = {
-                "Dental",
-                "Cardiology",
-                "Neurology",
-                "Orthopedic",
-                "General",
-                "Others"
-        };
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+    private void openDatePicker() {
+        Calendar c = Calendar.getInstance();
+        new DatePickerDialog(
                 requireContext(),
-                android.R.layout.simple_spinner_item,
-                categories
-        );
-
-        adapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item
-        );
-
-        spCategory.setAdapter(adapter);
+                (view, y, m, d) -> etDate.setText(d + "/" + (m + 1) + "/" + y),
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH)
+        ).show();
     }
 
-    // -----------------------------
-    // Date Picker
-    // -----------------------------
-    private void setupDatePicker() {
+    private void createFolder() {
 
-        etDate.setOnClickListener(v -> {
+        String folderName = etFolderName.getText().toString().trim();
+        String date = etDate.getText().toString().trim();
+        String hospital = etHospital.getText().toString().trim();
+        String description = etDescription.getText().toString().trim();
+        String category = spCategory.getSelectedItem().toString();
 
-            Calendar calendar = Calendar.getInstance();
+        if (TextUtils.isEmpty(folderName)) {
+            etFolderName.setError("Required");
+            return;
+        }
 
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
+        if (TextUtils.isEmpty(date)) {
+            etDate.setError("Required");
+            return;
+        }
 
-            DatePickerDialog dialog = new DatePickerDialog(
-                    requireContext(),
-                    (view, y, m, d) -> {
-                        String selectedDate =
-                                d + "/" + (m + 1) + "/" + y;
-                        etDate.setText(selectedDate);
-                    },
-                    year,
-                    month,
-                    day
-            );
+        if (auth.getCurrentUser() == null) {
+            Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-            dialog.show();
-        });
+        String userId = auth.getCurrentUser().getUid();
+        String folderId = folderRef.child(userId).push().getKey();
+
+        if (folderId == null) {
+            Toast.makeText(getContext(), "Failed to create folder", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("folderId", folderId);
+        data.put("folderName", folderName);
+        data.put("date", date);
+        data.put("hospital", hospital);
+        data.put("category", category);
+        data.put("description", description);
+        data.put("createdAt", System.currentTimeMillis());
+
+        folderRef.child(userId).child(folderId)
+                .setValue(data)
+                .addOnSuccessListener(unused -> {
+
+                    Toast.makeText(
+                            getContext(),
+                            "Health folder created",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    // ✅ OPEN FOLDERS LIST FRAGMENT
+                    requireActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(
+                                    R.id.health_folder_fragment_container,
+                                    new FoldersListFragment()
+                            )
+                            .addToBackStack(null)
+                            .commit();
+                });
     }
 }
