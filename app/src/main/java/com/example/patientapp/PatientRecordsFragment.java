@@ -1,105 +1,108 @@
 package com.example.patientapp;
+
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 public class PatientRecordsFragment extends Fragment {
 
-    private TextView tvName, tvVitals;
+    // Tabs
+    private TextView tabMedicines, tabXRays, tabReports, tabDocuments;
 
-    public PatientRecordsFragment() {}
+    // Dropdown container
+    private LinearLayout layoutRecordsDropdown;
 
-        @Nullable
-        @Override
-        public View onCreateView(
-                @NonNull LayoutInflater inflater,
-                @Nullable ViewGroup container,
-                @Nullable Bundle savedInstanceState
+    // Sections inside included layout
+    private LinearLayout layoutMedicines, layoutXRays, layoutReports, layoutDocuments;
+
+    public PatientRecordsFragment() {
+        // Required empty public constructor
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState
     ) {
 
-            View view = inflater.inflate(
-                    R.layout.fragment_patient_records,
-                    container,
-                    false
-            );
+        View rootView = inflater.inflate(
+                R.layout.fragment_patient_records,
+                container,
+                false
+        );
 
-            // Bind views
-            tvName = view.findViewById(R.id.tvName);
-            tvVitals = view.findViewById(R.id.tvVitals);
-
-            // Get UID
-            if (getArguments() != null) {
-                String patientUid = getArguments().getString("PATIENT_UID");
-                fetchPatientDetails(patientUid);
+        // -----------------------------
+        // Back Button
+        // -----------------------------
+        rootView.findViewById(R.id.btn_back_records).setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().findViewById(R.id.doctor_fragment_container)
+                        .setVisibility(View.GONE);
+                getActivity().getSupportFragmentManager()
+                        .popBackStack();
             }
+        });
 
-            return view;
-        }
+        // -----------------------------
+        // Tabs
+        // -----------------------------
+        tabMedicines = rootView.findViewById(R.id.tabMedicines);
+        tabXRays = rootView.findViewById(R.id.tabXRays);
+        tabReports = rootView.findViewById(R.id.tabReports);
+        tabDocuments = rootView.findViewById(R.id.tabDocuments);
 
-private void fetchPatientDetails(String patientUid) {
+        // -----------------------------
+        // Dropdown container
+        // -----------------------------
+        layoutRecordsDropdown = rootView.findViewById(R.id.layoutRecordsDropdown);
 
-    DatabaseReference ref = FirebaseDatabase.getInstance()
-            .getReference("users")
-            .child(patientUid);
+        // -----------------------------
+        // Included layout views
+        // -----------------------------
+        View includedView = rootView.findViewById(R.id.includeRecords);
 
-    ref.addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot snapshot) {
+        layoutMedicines = includedView.findViewById(R.id.layoutMedicines);
+        layoutXRays = includedView.findViewById(R.id.layoutXRays);
+        layoutReports = includedView.findViewById(R.id.layoutReports);
+        layoutDocuments = includedView.findViewById(R.id.layoutDocuments);
 
-            if (!snapshot.exists()) {
-                tvName.setText("Patient not found");
-                tvVitals.setText("-");
-                return;
-            }
+        // Initial state
+        hideAllSections();
+        layoutRecordsDropdown.setVisibility(View.GONE);
 
-            String name = snapshot.child("fullName").getValue(String.class);
-            String gender = snapshot.child("gender").getValue(String.class);
-            String bloodGroup = snapshot.child("bloodGroup").getValue(String.class);
-            Long height = snapshot.child("heightCm").getValue(Long.class);
+        // -----------------------------
+        // Tab clicks
+        // -----------------------------
+        tabMedicines.setOnClickListener(v -> showSection(layoutMedicines));
+        tabXRays.setOnClickListener(v -> showSection(layoutXRays));
+        tabReports.setOnClickListener(v -> showSection(layoutReports));
+        tabDocuments.setOnClickListener(v -> showSection(layoutDocuments));
 
-            // Name
-            tvName.setText(name != null ? name : "-");
+        return rootView;
+    }
 
-            // Build vitals string safely
-            StringBuilder vitalsBuilder = new StringBuilder();
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    private void showSection(LinearLayout section) {
+        layoutRecordsDropdown.setVisibility(View.VISIBLE);
+        hideAllSections();
+        section.setVisibility(View.VISIBLE);
+    }
 
-            if (gender != null && !gender.isEmpty()) {
-                vitalsBuilder.append(gender);
-            }
-
-            if (height != null) {
-                if (vitalsBuilder.length() > 0) vitalsBuilder.append(" • ");
-                vitalsBuilder.append(height).append("cm");
-            }
-
-            if (bloodGroup != null && !bloodGroup.isEmpty()) {
-                if (vitalsBuilder.length() > 0) vitalsBuilder.append(" • ");
-                vitalsBuilder.append(bloodGroup);
-            }
-
-            tvVitals.setText(
-                    vitalsBuilder.length() > 0 ? vitalsBuilder.toString() : "-"
-            );
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError error) {
-            tvName.setText("Error loading data");
-            tvVitals.setText("-");
-        }
-    });
-}
+    private void hideAllSections() {
+        layoutMedicines.setVisibility(View.GONE);
+        layoutXRays.setVisibility(View.GONE);
+        layoutReports.setVisibility(View.GONE);
+        layoutDocuments.setVisibility(View.GONE);
+    }
 }
