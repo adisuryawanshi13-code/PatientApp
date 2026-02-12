@@ -92,7 +92,7 @@ public class RegisterActivity extends AppCompatActivity {
             intent = new Intent(this, MainActivity.class);
         } else if ("DOCTOR".equalsIgnoreCase(role)
                 || "VOLUNTEER".equalsIgnoreCase(role)) {
-            intent = new Intent(this, DoctorHomePageActivity.class);
+            intent = new Intent(this, MainActivity.class);
         } else {
             intent = new Intent(this, MainActivity.class); // fallback
         }

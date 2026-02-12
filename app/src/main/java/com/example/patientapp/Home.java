@@ -41,6 +41,8 @@ public class Home extends Fragment {
     private TextView tvGreeting;
     private TextView tvEmpty;
 
+    private ImageView healthRecord;
+
     FirebaseAuth auth;
     DatabaseReference userRef;
 
@@ -70,6 +72,18 @@ public class Home extends Fragment {
 
         // 🔥 MISSING LINE (THIS WAS THE BUG)
         tvGreeting = view.findViewById(R.id.tvGreeting);
+
+        healthRecord = view.findViewById(R.id.healthRecord);
+
+        healthRecord.setOnClickListener(v -> {
+
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new FoldersListFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
 
         auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();

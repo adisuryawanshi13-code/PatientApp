@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#F8FAFC"
     android:fitsSystemWindows="true"
-    tools:context=".DoctorHomePageActivity">
+    tools:context=".DoctorHomePageFragment">
 
     <!-- Top Profile Bar - Fixed Height and Clearer Alignment -->
     <RelativeLayout
@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@android:drawable/ic_menu_gallery" />
+                android:src="@drawable/doctor" />
         </androidx.cardview.widget.CardView>
 
         <LinearLayout
@@ -75,7 +75,7 @@
             android:layout_height="26dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@android:drawable/ic_popup_reminder"
+            android:src="@drawable/bell"
             app:tint="#64748B" />
     </RelativeLayout>
 
@@ -121,7 +121,6 @@
                 android:id="@+id/btnScanQr"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:background="@android:color/transparent"
                 android:clickable="true"
                 android:drawableStart="@android:drawable/ic_menu_camera"
                 android:drawablePadding="12dp"
@@ -171,7 +170,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_agenda"
+                            android:src="@drawable/docs"
                             app:tint="#3B82F6" />
                         <TextView
                             android:layout_width="wrap_content"
@@ -203,7 +202,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_help"
+                            android:src="@drawable/psychology"
                             app:tint="#8B5CF6" />
                         <TextView
                             android:layout_width="wrap_content"
@@ -237,7 +236,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_edit"
+                            android:src="@drawable/prescriptions"
                             app:tint="#10B981" />
 
                         <TextView
@@ -270,7 +269,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_myplaces"
+                            android:src="@drawable/holiday_village"
                             app:tint="#EA580C" />
                         <TextView
                             android:layout_width="wrap_content"
@@ -302,7 +301,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_sort_by_size"
+                            android:src="@drawable/analytics"
                             app:tint="#EF4444" />
                         <TextView
                             android:layout_width="wrap_content"
@@ -660,16 +659,6 @@
             android:layout_height="1dp"
             android:background="#F1F5F9"/>
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_navigation"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:background="#FFFFFF"
-            app:itemIconSize="22dp"
-            app:itemIconTint="@color/nav_item_color"
-            app:itemTextColor="@color/nav_item_color"
-            app:labelVisibilityMode="labeled"
-            app:menu="@menu/doctor_bottom_nav_menu" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,9 +14,12 @@ import java.util.List;
 public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder> {
 
     private final List<FolderModel> folderList;
+    private final OnFolderClickListener listener;
 
-    public FolderAdapter(List<FolderModel> folderList) {
+    public FolderAdapter(List<FolderModel> folderList,
+                         OnFolderClickListener listener) {
         this.folderList = folderList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -39,11 +42,21 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
 
         holder.tvFolderName.setText(folder.folderName);
         holder.tvMeta.setText(folder.date + " • " + folder.hospital);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onFolderClick(folder);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return folderList.size();
+    }
+
+    public interface OnFolderClickListener {
+        void onFolderClick(FolderModel folder);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

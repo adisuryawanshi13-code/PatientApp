@@ -75,8 +75,24 @@ public class FoldersListFragment extends Fragment {
         createFolder = rootView.findViewById(R.id.createFolder);
 
         folderList = new ArrayList<>();
-        adapter = new FolderAdapter(folderList);
+
+        adapter = new FolderAdapter(folderList, folder -> {
+
+            Bundle bundle = new Bundle();
+            bundle.putString("FOLDER_ID", folder.folderId);
+
+            FolderDetailsFragment fragment = new FolderDetailsFragment();
+            fragment.setArguments(bundle);
+
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
+
         recyclerFolders.setAdapter(adapter);
+
 
         auth = FirebaseAuth.getInstance();
 
@@ -166,4 +182,6 @@ public class FoldersListFragment extends Fragment {
             }
         });
     }
+
+
 }

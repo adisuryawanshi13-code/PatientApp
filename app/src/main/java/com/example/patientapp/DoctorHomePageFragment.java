@@ -1,56 +1,60 @@
 package com.example.patientapp;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-public class DoctorHomePageActivity extends AppCompatActivity {
-    Button btnScanQr;
-    CardView cardRecords; // Added for the Records Quick Action
+public class DoctorHomePageFragment extends Fragment {
 
-    @SuppressLint("MissingInflatedId")
+    private Button btnScanQr;
+    private CardView cardRecords;
+
+    public DoctorHomePageFragment() {
+        // Required empty constructor
+    }
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_doctor_home_page);
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
 
-        btnScanQr = findViewById(R.id.btnScanQr);
-        cardRecords = findViewById(R.id.card_patient_records); // Link to XML ID
+        View view = inflater.inflate(R.layout.fragment_doctor_home_page, container, false);
 
-        // Existing QR Scan Logic
+        btnScanQr = view.findViewById(R.id.btnScanQr);
+        cardRecords = view.findViewById(R.id.card_patient_records);
+
+        // QR Scan Button Click
         btnScanQr.setOnClickListener(v -> {
-            IntentIntegrator integrator = new IntentIntegrator(this);
+            IntentIntegrator integrator = IntentIntegrator.forSupportFragment(this);
             integrator.setPrompt("Scan Patient QR");
             integrator.setBeepEnabled(true);
             integrator.setOrientationLocked(true);
             integrator.initiateScan();
         });
 
-        // New Logic: Open Records Fragment when card is clicked
-        cardRecords.setOnClickListener(v -> {
-            openRecordsFragment();
-        });
+        // Open Records Fragment
+        cardRecords.setOnClickListener(v -> openRecordsFragment());
 
+        return view;
     }
 
-    // Helper method to open the new Patient Records page
     private void openRecordsFragment() {
-        // Show the container so it covers the home screen
-        findViewById(R.id.doctor_fragment_container).setVisibility(View.VISIBLE);
+        requireActivity().findViewById(R.id.doctor_fragment_container).setVisibility(View.VISIBLE);
 
-        getSupportFragmentManager()
+        requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.doctor_fragment_container, new PatientRecordsFragment())
                 .addToBackStack(null)
@@ -58,10 +62,11 @@ public class DoctorHomePageActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
         if (result != null && result.getContents() != null) {
 
             String scannedText = result.getContents();
@@ -70,14 +75,14 @@ public class DoctorHomePageActivity extends AppCompatActivity {
                 String patientUid = scannedText.replace("patient_uid:", "");
                 openPatientDetailsFragment(patientUid);
             } else {
-                Toast.makeText(this, "Invalid QR Code", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Invalid QR Code", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     private void openPatientDetailsFragment(String patientUid) {
-        // Show container for fragment
-        findViewById(R.id.doctor_fragment_container).setVisibility(View.VISIBLE);
+
+        requireActivity().findViewById(R.id.doctor_fragment_container).setVisibility(View.VISIBLE);
 
         Bundle bundle = new Bundle();
         bundle.putString("PATIENT_UID", patientUid);
@@ -85,7 +90,7 @@ public class DoctorHomePageActivity extends AppCompatActivity {
         PatientRecordsFragment fragment = new PatientRecordsFragment();
         fragment.setArguments(bundle);
 
-        getSupportFragmentManager()
+        requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.doctor_fragment_container, fragment)
                 .addToBackStack(null)
