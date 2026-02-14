@@ -36,6 +36,8 @@ public class FoldersListFragment extends Fragment {
     private Button createFolder;
 
     private FirebaseAuth auth;
+    private String targetUid;
+
     private DatabaseReference folderRef;
 
     private View rootView;
@@ -49,25 +51,6 @@ public class FoldersListFragment extends Fragment {
     ) {
 
         rootView = inflater.inflate(R.layout.fragment_folders_list, container, false);
-        requireActivity()
-                .getOnBackPressedDispatcher()
-                .addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
-                    @Override
-                    public void handleOnBackPressed() {
-
-                        FragmentManager childFm = getChildFragmentManager();
-
-                        if (childFm.getBackStackEntryCount() > 0) {
-                            // Pop HealthFolderFragment
-                            childFm.popBackStack();
-                        } else {
-                            // Let activity handle back (switch tab / exit)
-                            setEnabled(false);
-                            requireActivity().onBackPressed();
-                        }
-                    }
-                });
-
 
         recyclerFolders = rootView.findViewById(R.id.recyclerFolders);
         recyclerFolders.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -76,43 +59,69 @@ public class FoldersListFragment extends Fragment {
 
         folderList = new ArrayList<>();
 
+        auth = FirebaseAuth.getInstance();
+
+        // -----------------------------
+        // Get TARGET UID
+        // -----------------------------
+        if (getArguments() != null) {
+            targetUid = getArguments().getString("TARGET_UID");
+        }
+
+        if (targetUid == null) {
+            targetUid = auth.getCurrentUser().getUid();
+        }
+
+        // -----------------------------
+        // Folder Click Logic (Reusable)
+        // -----------------------------
         adapter = new FolderAdapter(folderList, folder -> {
 
             Bundle bundle = new Bundle();
             bundle.putString("FOLDER_ID", folder.folderId);
+            bundle.putString("TARGET_UID", targetUid);
 
             FolderDetailsFragment fragment = new FolderDetailsFragment();
             fragment.setArguments(bundle);
 
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
+            // If this fragment is inside another fragment
+            if (getParentFragment() != null) {
+
+                getParentFragment()
+                        .getChildFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.records_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+
+            } else {
+                // Normal patient flow
+                requireActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
         });
 
         recyclerFolders.setAdapter(adapter);
 
-
-        auth = FirebaseAuth.getInstance();
-
-        if (auth.getCurrentUser() == null) {
-            Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show();
-            return rootView;
-        }
-
-        String userId = auth.getCurrentUser().getUid();
-
         folderRef = FirebaseDatabase
                 .getInstance()
                 .getReference("folder")
-                .child(userId);
+                .child(targetUid);
 
         loadFolders();
 
-        createFolder.setOnClickListener(v -> openHealthFolderFragment());
-
-        setupBackStackListener();
+        // -----------------------------
+        // Hide create button if doctor
+        // -----------------------------
+        if (getParentFragment() != null) {
+            createFolder.setVisibility(View.GONE);
+        } else {
+            createFolder.setOnClickListener(v -> openHealthFolderFragment());
+        }
 
         return rootView;
     }
@@ -135,23 +144,6 @@ public class FoldersListFragment extends Fragment {
                 )
                 .addToBackStack(null)
                 .commit();
-    }
-
-    private void setupBackStackListener() {
-
-        getChildFragmentManager().addOnBackStackChangedListener(() -> {
-
-            if (getChildFragmentManager().getBackStackEntryCount() == 0) {
-
-                View container = rootView.findViewById(R.id.folder_fragment_container);
-                View recycler = rootView.findViewById(R.id.recyclerFolders);
-                View button = rootView.findViewById(R.id.createFolder);
-
-                container.setVisibility(View.GONE);
-                recycler.setVisibility(View.VISIBLE);
-                button.setVisibility(View.VISIBLE);
-            }
-        });
     }
 
     private void loadFolders() {
@@ -182,6 +174,4 @@ public class FoldersListFragment extends Fragment {
             }
         });
     }
-
-
 }

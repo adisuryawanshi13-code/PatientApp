@@ -11,20 +11,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 public class PatientRecordsFragment extends Fragment {
 
-    // Tabs
-    private TextView tabMedicines, tabXRays, tabReports, tabDocuments;
+    private TextView patientName, height, bloodGroup;
+    private DatabaseReference userRef;
+    private String patientUid;
 
-    // Dropdown container
-    private LinearLayout layoutRecordsDropdown;
-
-    // Sections inside included layout
-    private LinearLayout layoutMedicines, layoutXRays, layoutReports, layoutDocuments;
-
-    public PatientRecordsFragment() {
-        // Required empty public constructor
-    }
+    public PatientRecordsFragment() {}
 
     @Nullable
     @Override
@@ -43,66 +42,93 @@ public class PatientRecordsFragment extends Fragment {
         // -----------------------------
         // Back Button
         // -----------------------------
-        rootView.findViewById(R.id.btn_back_records).setOnClickListener(v -> {
-            if (getActivity() != null) {
-                getActivity().findViewById(R.id.doctor_fragment_container)
-                        .setVisibility(View.GONE);
-                getActivity().getSupportFragmentManager()
-                        .popBackStack();
+        rootView.findViewById(R.id.btn_back_records)
+                .setOnClickListener(v -> {
+                    if (getActivity() != null) {
+                        getActivity().findViewById(R.id.doctor_fragment_container)
+                                .setVisibility(View.GONE);
+                        getActivity().getSupportFragmentManager()
+                                .popBackStack();
+                    }
+                });
+
+        patientName = rootView.findViewById(R.id.patientName);
+        height = rootView.findViewById(R.id.height);
+        bloodGroup = rootView.findViewById(R.id.patientBloodGroup);
+
+        // -----------------------------
+        // Get PATIENT UID
+        // -----------------------------
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.containsKey("PATIENT_UID")) {
+            patientUid = bundle.getString("PATIENT_UID");
+        }
+
+        if (patientUid == null) return rootView;
+
+        // -----------------------------
+        // Load Patient Info
+        // -----------------------------
+        userRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(patientUid);
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                if (snapshot.exists()) {
+
+                    String fullName = snapshot.child("fullName").getValue(String.class);
+                    String bloodGrp = snapshot.child("bloodGroup").getValue(String.class);
+                    Long heightCm = snapshot.child("heightCm").getValue(Long.class);
+
+                    if (fullName != null)
+                        patientName.setText(fullName);
+
+                    if (bloodGrp != null)
+                        bloodGroup.setText(bloodGrp);
+
+                    if (heightCm != null)
+                        height.setText(heightCm + " cm");
+                }
             }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
 
         // -----------------------------
-        // Tabs
+        // Load FoldersListFragment inside
         // -----------------------------
-        tabMedicines = rootView.findViewById(R.id.tabMedicines);
-        tabXRays = rootView.findViewById(R.id.tabXRays);
-        tabReports = rootView.findViewById(R.id.tabReports);
-        tabDocuments = rootView.findViewById(R.id.tabDocuments);
-
-        // -----------------------------
-        // Dropdown container
-        // -----------------------------
-        layoutRecordsDropdown = rootView.findViewById(R.id.layoutRecordsDropdown);
-
-        // -----------------------------
-        // Included layout views
-        // -----------------------------
-        View includedView = rootView.findViewById(R.id.includeRecords);
-
-        layoutMedicines = includedView.findViewById(R.id.layoutMedicines);
-        layoutXRays = includedView.findViewById(R.id.layoutXRays);
-        layoutReports = includedView.findViewById(R.id.layoutReports);
-        layoutDocuments = includedView.findViewById(R.id.layoutDocuments);
-
-        // Initial state
-        hideAllSections();
-        layoutRecordsDropdown.setVisibility(View.GONE);
-
-        // -----------------------------
-        // Tab clicks
-        // -----------------------------
-        tabMedicines.setOnClickListener(v -> showSection(layoutMedicines));
-        tabXRays.setOnClickListener(v -> showSection(layoutXRays));
-        tabReports.setOnClickListener(v -> showSection(layoutReports));
-        tabDocuments.setOnClickListener(v -> showSection(layoutDocuments));
+        loadFoldersFragment();
 
         return rootView;
     }
 
-    // -----------------------------
-    // Helpers
-    // -----------------------------
-    private void showSection(LinearLayout section) {
-        layoutRecordsDropdown.setVisibility(View.VISIBLE);
-        hideAllSections();
-        section.setVisibility(View.VISIBLE);
+    private void loadFoldersFragment() {
+
+        Bundle bundle = new Bundle();
+        bundle.putString("TARGET_UID", patientUid);
+
+        FoldersListFragment fragment = new FoldersListFragment();
+        fragment.setArguments(bundle);
+
+        getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.records_container, fragment)
+                .addToBackStack(null)
+                .commit();
+
     }
 
-    private void hideAllSections() {
-        layoutMedicines.setVisibility(View.GONE);
-        layoutXRays.setVisibility(View.GONE);
-        layoutReports.setVisibility(View.GONE);
-        layoutDocuments.setVisibility(View.GONE);
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        View topBar = requireActivity().findViewById(R.id.top_bar);
+        if (topBar != null) {
+            topBar.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -56,6 +56,9 @@ public class FolderDetailsFragment extends Fragment {
 
     private String currentCategory = "REPORT"; // default
 
+    private String targetUid;
+
+
 
 
     private RecyclerView rvRecords;
@@ -92,13 +95,9 @@ public class FolderDetailsFragment extends Fragment {
 
         auth = FirebaseAuth.getInstance();
 
-        if (auth.getCurrentUser() == null) {
-            Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show();
-            return view;
-        }
-
         if (getArguments() != null) {
             folderId = getArguments().getString("FOLDER_ID");
+            targetUid = getArguments().getString("TARGET_UID");
         }
 
         if (folderId == null) {
@@ -106,23 +105,33 @@ public class FolderDetailsFragment extends Fragment {
             return view;
         }
 
-        String userId = auth.getCurrentUser().getUid();
+        // If opened normally (patient flow)
+        if (targetUid == null) {
+            targetUid = auth.getCurrentUser().getUid();
+        }
+
+
 
         filesRef = FirebaseDatabase.getInstance()
                 .getReference("folderFiles")
-                .child(userId)
+                .child(targetUid)
                 .child(folderId);
+
 
         loadFiles();
 
         folderRef = FirebaseDatabase.getInstance()
                 .getReference("folder")
-                .child(userId)
+                .child(targetUid)
                 .child(folderId);
 
-
-
         loadFolderDetails();
+
+        // If doctor viewing patient, hide upload
+        if (!targetUid.equals(auth.getCurrentUser().getUid())) {
+            btnUpload.setVisibility(View.GONE);
+        }
+
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
 

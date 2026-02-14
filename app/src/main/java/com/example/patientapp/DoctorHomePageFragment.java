@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,13 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -20,6 +28,13 @@ public class DoctorHomePageFragment extends Fragment {
 
     private Button btnScanQr;
     private CardView cardRecords;
+
+    private TextView doctorName;
+    private FirebaseAuth auth;
+    private DatabaseReference userRef;
+    private View rootView;
+
+
 
     public DoctorHomePageFragment() {
         // Required empty constructor
@@ -31,10 +46,47 @@ public class DoctorHomePageFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_doctor_home_page, container, false);
+        rootView = inflater.inflate(R.layout.fragment_doctor_home_page, container, false);
 
-        btnScanQr = view.findViewById(R.id.btnScanQr);
-        cardRecords = view.findViewById(R.id.card_patient_records);
+
+        btnScanQr = rootView.findViewById(R.id.btnScanQr);
+        cardRecords = rootView.findViewById(R.id.card_patient_records);
+
+        doctorName = rootView.findViewById(R.id.doctorName);
+
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+
+        if (currentUser != null) {
+
+            String uid = currentUser.getUid();
+
+            userRef = FirebaseDatabase.getInstance()
+                    .getReference("users")
+                    .child(uid);
+
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    if (snapshot.exists()) {
+
+                        String fullName = snapshot.child("fullName").getValue(String.class);
+
+                        if (fullName != null) {
+                            doctorName.setText("Dr. " + fullName);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(requireContext(), "Failed to load name", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+
 
         // QR Scan Button Click
         btnScanQr.setOnClickListener(v -> {
@@ -48,11 +100,12 @@ public class DoctorHomePageFragment extends Fragment {
         // Open Records Fragment
         cardRecords.setOnClickListener(v -> openRecordsFragment());
 
-        return view;
+        return rootView;
     }
 
     private void openRecordsFragment() {
-        requireActivity().findViewById(R.id.doctor_fragment_container).setVisibility(View.VISIBLE);
+        rootView.findViewById(R.id.top_bar).setVisibility(View.GONE);
+        rootView.findViewById(R.id.doctor_fragment_container).setVisibility(View.VISIBLE);
 
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
