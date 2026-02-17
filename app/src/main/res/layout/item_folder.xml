@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <!-- ICON -->
+        <ImageView
+            android:id="@+id/imgIcon"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/folder_24"
+            android:background="@drawable/bg_icon_circle"
+            android:padding="10dp"
+            app:tint="#1A56DB"/>
+
+        <!-- TEXT CONTENT -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvFolderName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Folder Name"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#111827"/>
+
+            <TextView
+                android:id="@+id/tvMeta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12 Oct 2023 • City Hospital"
+                android:textSize="12sp"
+                android:textColor="#6B7280"/>
+        </LinearLayout>
+
+        <!-- ACTION ICON -->
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="20dp"
+            android:src="@drawable/arrow_forward"
+            app:tint="@color/black"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

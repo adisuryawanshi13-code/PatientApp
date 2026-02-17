@@ -13,9 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PatientApp">
-        <activity
-            android:name=".DoctorHomePageActivity"
-            android:exported="false" />
+
         <!-- 🚀 LAUNCHER: Auth / Register -->
         <activity
             android:name=".RegisterActivity"
@@ -26,10 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- Login Screen -->
-
-        <activity
-            android:name=".HomePage"
-            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false" />

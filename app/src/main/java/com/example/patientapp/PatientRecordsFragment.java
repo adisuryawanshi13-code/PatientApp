@@ -1,9 +1,10 @@
 package com.example.patientapp;
+
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,88 +19,116 @@ import com.google.firebase.database.ValueEventListener;
 
 public class PatientRecordsFragment extends Fragment {
 
-    private TextView tvName, tvVitals;
+    private TextView patientName, height, bloodGroup;
+    private DatabaseReference userRef;
+    private String patientUid;
 
     public PatientRecordsFragment() {}
 
-        @Nullable
-        @Override
-        public View onCreateView(
-                @NonNull LayoutInflater inflater,
-                @Nullable ViewGroup container,
-                @Nullable Bundle savedInstanceState
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState
     ) {
 
-            View view = inflater.inflate(
-                    R.layout.fragment_patient_records,
-                    container,
-                    false
-            );
+        View rootView = inflater.inflate(
+                R.layout.fragment_patient_records,
+                container,
+                false
+        );
 
-            // Bind views
-            tvName = view.findViewById(R.id.tvName);
-            tvVitals = view.findViewById(R.id.tvVitals);
+        // -----------------------------
+        // Back Button
+        // -----------------------------
+        rootView.findViewById(R.id.btn_back_records)
+                .setOnClickListener(v -> {
+                    if (getActivity() != null) {
+                        getActivity().findViewById(R.id.doctor_fragment_container)
+                                .setVisibility(View.GONE);
+                        getActivity().getSupportFragmentManager()
+                                .popBackStack();
+                    }
+                });
 
-            // Get UID
-            if (getArguments() != null) {
-                String patientUid = getArguments().getString("PATIENT_UID");
-                fetchPatientDetails(patientUid);
-            }
+        patientName = rootView.findViewById(R.id.patientName);
+        height = rootView.findViewById(R.id.height);
+        bloodGroup = rootView.findViewById(R.id.patientBloodGroup);
 
-            return view;
+        // -----------------------------
+        // Get PATIENT UID
+        // -----------------------------
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.containsKey("PATIENT_UID")) {
+            patientUid = bundle.getString("PATIENT_UID");
         }
 
-private void fetchPatientDetails(String patientUid) {
+        if (patientUid == null) return rootView;
 
-    DatabaseReference ref = FirebaseDatabase.getInstance()
-            .getReference("users")
-            .child(patientUid);
+        // -----------------------------
+        // Load Patient Info
+        // -----------------------------
+        userRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(patientUid);
 
-    ref.addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot snapshot) {
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-            if (!snapshot.exists()) {
-                tvName.setText("Patient not found");
-                tvVitals.setText("-");
-                return;
+                if (snapshot.exists()) {
+
+                    String fullName = snapshot.child("fullName").getValue(String.class);
+                    String bloodGrp = snapshot.child("bloodGroup").getValue(String.class);
+                    Long heightCm = snapshot.child("heightCm").getValue(Long.class);
+
+                    if (fullName != null)
+                        patientName.setText(fullName);
+
+                    if (bloodGrp != null)
+                        bloodGroup.setText(bloodGrp);
+
+                    if (heightCm != null)
+                        height.setText(heightCm + " cm");
+                }
             }
 
-            String name = snapshot.child("fullName").getValue(String.class);
-            String gender = snapshot.child("gender").getValue(String.class);
-            String bloodGroup = snapshot.child("bloodGroup").getValue(String.class);
-            Long height = snapshot.child("heightCm").getValue(Long.class);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
 
-            // Name
-            tvName.setText(name != null ? name : "-");
+        // -----------------------------
+        // Load FoldersListFragment inside
+        // -----------------------------
+        loadFoldersFragment();
 
-            // Build vitals string safely
-            StringBuilder vitalsBuilder = new StringBuilder();
+        return rootView;
+    }
 
-            if (gender != null && !gender.isEmpty()) {
-                vitalsBuilder.append(gender);
-            }
+    private void loadFoldersFragment() {
 
-            if (height != null) {
-                if (vitalsBuilder.length() > 0) vitalsBuilder.append(" • ");
-                vitalsBuilder.append(height).append("cm");
-            }
+        Bundle bundle = new Bundle();
+        bundle.putString("TARGET_UID", patientUid);
 
-            if (bloodGroup != null && !bloodGroup.isEmpty()) {
-                if (vitalsBuilder.length() > 0) vitalsBuilder.append(" • ");
-                vitalsBuilder.append(bloodGroup);
-            }
+        FoldersListFragment fragment = new FoldersListFragment();
+        fragment.setArguments(bundle);
 
-            tvVitals.setText(
-                    vitalsBuilder.length() > 0 ? vitalsBuilder.toString() : "-"
-            );
+        getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.records_container, fragment)
+                .addToBackStack(null)
+                .commit();
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        View topBar = requireActivity().findViewById(R.id.top_bar);
+        if (topBar != null) {
+            topBar.setVisibility(View.VISIBLE);
         }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError error) {
-            tvName.setText("Error loading data");
-            tvVitals.setText("-");
-        }
-    });
-}
+    }
 }

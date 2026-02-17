@@ -22,7 +22,8 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="12dp"
             android:padding="6dp"
-            android:src="@android:drawable/ic_menu_revert"
+            android:src="@drawable/arrow_back"
+            app:tint="@color/black"
             android:clickable="true"
             android:focusable="true"/>
 
@@ -50,17 +51,24 @@
             android:padding="20dp">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="Create Folder"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#111827"/>
+                android:textColor="#111827"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
-            <!-- Folder Name -->
+            <TextView
+                android:text="Enter details to organize our medical documents and history securely"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:textColor="#111827"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
             <TextView
                 android:text="Folder Name"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="20dp"
                 android:textSize="12sp"
                 android:textColor="#374151"
                 android:layout_width="wrap_content"
@@ -71,10 +79,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:hint="e.g. Checkup 2024"
-                android:background="@android:drawable/edit_text"
+                android:background="@drawable/bg_rounded_input"
                 android:padding="12dp"/>
 
-            <!-- Date -->
             <TextView
                 android:text="Date of Visit"
                 android:layout_marginTop="16dp"
@@ -90,10 +97,9 @@
                 android:hint="Select date"
                 android:focusable="false"
                 android:clickable="true"
-                android:background="@android:drawable/edit_text"
+                android:background="@drawable/bg_rounded_input"
                 android:padding="12dp"/>
 
-            <!-- Hospital -->
             <TextView
                 android:text="Hospital / Location"
                 android:layout_marginTop="16dp"
@@ -107,10 +113,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:hint="e.g. City General"
-                android:background="@android:drawable/edit_text"
+                android:background="@drawable/bg_rounded_input"
                 android:padding="12dp"/>
 
-            <!-- Category -->
             <TextView
                 android:text="Select Category"
                 android:layout_marginTop="16dp"
@@ -122,9 +127,9 @@
             <Spinner
                 android:id="@+id/spCategory"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"/>
+                android:layout_height="48dp"
+                android:background="@drawable/bg_rounded_input"/>
 
-            <!-- Description -->
             <TextView
                 android:text="Description (Optional)"
                 android:layout_marginTop="16dp"
@@ -139,13 +144,12 @@
                 android:layout_height="100dp"
                 android:hint="Notes..."
                 android:gravity="top"
-                android:background="@android:drawable/edit_text"
+                android:background="@drawable/bg_rounded_input"
                 android:padding="12dp"/>
 
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom Button -->
     <Button
         android:id="@+id/btnCreateFolder"
         android:layout_width="0dp"
