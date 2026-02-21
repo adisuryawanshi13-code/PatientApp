@@ -258,7 +258,7 @@
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="Save & Issue Prescription"
+            android:text="Save and Issue Prescription"
             android:textSize="16sp"
             android:backgroundTint="#3A6CF4"
             android:textColor="@android:color/white"
