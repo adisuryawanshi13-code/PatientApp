@@ -1,6 +1,8 @@
 package com.example.patientapp;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +31,8 @@ public class PatientRecordsFragment extends Fragment {
     private DatabaseReference userRef;
     private String patientUid;
     private Button aiSummaryButton;
+
+    private TextView tvAiSummary;
 
     public PatientRecordsFragment() {}
 
@@ -63,6 +67,7 @@ public class PatientRecordsFragment extends Fragment {
         height = rootView.findViewById(R.id.height);
         bloodGroup = rootView.findViewById(R.id.patientBloodGroup);
         aiSummaryButton = rootView.findViewById(R.id.aisummarybutton);
+        tvAiSummary = rootView.findViewById(R.id.tvAiSummary);
 
         // -----------------------------
         // Get PATIENT UID
@@ -114,28 +119,113 @@ public class PatientRecordsFragment extends Fragment {
             }
         });
 
-        // -----------------------------
-        // AI SUMMARY BUTTON CLICK
-        // -----------------------------
+
         aiSummaryButton.setOnClickListener(v -> callGenerateSummary());
 
-        // -----------------------------
-        // Load Folders Fragment
-        // -----------------------------
         loadFoldersFragment();
 
         return rootView;
     }
 
-    // =============================
-    // CALL EXPRESS BACKEND
-    // =============================
+    private void animateSummaryText(String fullText) {
+
+        tvAiSummary.setText("");
+
+        if (fullText == null) return;
+
+        tvAiSummary.setAlpha(0f);
+        tvAiSummary.animate().alpha(1f).setDuration(300).start();
+
+        String[] sentences = fullText.split("(?<=\\.)");
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        int delay = 500;
+
+        for (int i = 0; i < sentences.length; i++) {
+
+            final int index = i;
+
+            handler.postDelayed(() -> {
+                tvAiSummary.append(sentences[index] + " ");
+            }, delay * i);
+        }
+    }
     private void callGenerateSummary() {
 
-        Toast.makeText(getContext(),
-                "Generating AI Summary...",
-                Toast.LENGTH_SHORT).show();
+        tvAiSummary.setText("Checking summary status...");
+        aiSummaryButton.setEnabled(false);
 
+        DatabaseReference summaryRef = FirebaseDatabase.getInstance()
+                .getReference("aiSummaries");
+
+        summaryRef.orderByChild("patientId")
+                .equalTo(patientUid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        DatabaseReference userRef = FirebaseDatabase.getInstance()
+                                .getReference("users")
+                                .child(patientUid);
+
+                        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot userSnap) {
+
+                                Long lastMedicalUpdate =
+                                        userSnap.child("lastMedicalUpdateAt")
+                                                .getValue(Long.class);
+
+                                if (snapshot.exists()) {
+
+                                    DataSnapshot summarySnap =
+                                            snapshot.getChildren().iterator().next();
+
+                                    String existingSummary =
+                                            summarySnap.child("summaryText")
+                                                    .getValue(String.class);
+
+                                    Long generatedAt =
+                                            summarySnap.child("generatedAt")
+                                                    .getValue(Long.class);
+
+                                    if (generatedAt != null &&
+                                            lastMedicalUpdate != null &&
+                                            generatedAt >= lastMedicalUpdate) {
+
+                                        // ✅ Summary is fresh
+                                        animateSummaryText(existingSummary);
+                                        aiSummaryButton.setEnabled(true);
+                                        return;
+                                    }
+                                }
+
+                                // ❌ No summary OR outdated → regenerate
+                                generateNewSummary();
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                aiSummaryButton.setEnabled(true);
+                                tvAiSummary.setText("Error checking user data.");
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        aiSummaryButton.setEnabled(true);
+                        tvAiSummary.setText("Error checking summary.");
+                    }
+                });
+    }
+
+    private void generateNewSummary() {
+
+        tvAiSummary.setText("Generating AI Summary...");
         aiSummaryButton.setEnabled(false);
 
         ApiService apiService =
@@ -157,54 +247,25 @@ public class PatientRecordsFragment extends Fragment {
                             String summary = response.body().getSummary();
 
                             if (summary == null || summary.isEmpty()) {
-                                Toast.makeText(getContext(),
-                                        "Empty summary received",
-                                        Toast.LENGTH_LONG).show();
+                                tvAiSummary.setText("No summary generated.");
                                 return;
                             }
 
-                            showSummaryDialog(summary);
+                            animateSummaryText(summary);
 
                         } else {
-                            Toast.makeText(getContext(),
-                                    "Server Error: " + response.code(),
-                                    Toast.LENGTH_LONG).show();
+                            tvAiSummary.setText("Server Error.");
                         }
                     }
 
                     @Override
                     public void onFailure(Call<SummaryResponse> call, Throwable t) {
-
                         aiSummaryButton.setEnabled(true);
-
-                        Toast.makeText(getContext(),
-                                "Network Error: " + t.getMessage(),
-                                Toast.LENGTH_LONG).show();
+                        tvAiSummary.setText("Network Error.");
                     }
                 });
     }
 
-    // =============================
-    // SHOW SUMMARY DIALOG
-    // =============================
-    private void showSummaryDialog(String summaryText) {
-
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(requireContext());
-
-        builder.setTitle("AI Medical Summary");
-
-        builder.setMessage(summaryText);
-
-        builder.setPositiveButton("Close",
-                (dialog, which) -> dialog.dismiss());
-
-        builder.show();
-    }
-
-    // =============================
-    // LOAD FOLDERS FRAGMENT
-    // =============================
     private void loadFoldersFragment() {
 
         Bundle bundle = new Bundle();
@@ -229,4 +290,5 @@ public class PatientRecordsFragment extends Fragment {
             topBar.setVisibility(View.VISIBLE);
         }
     }
+
 }

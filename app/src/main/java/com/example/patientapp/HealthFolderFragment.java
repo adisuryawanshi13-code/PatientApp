@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -135,13 +136,20 @@ public class HealthFolderFragment extends Fragment {
                 .setValue(data)
                 .addOnSuccessListener(unused -> {
 
+                    // 🔥 1️⃣ Update lastMedicalUpdateAt
+                    FirebaseDatabase.getInstance()
+                            .getReference("users")
+                            .child(userId)
+                            .child("lastMedicalUpdateAt")
+                            .setValue(ServerValue.TIMESTAMP);
+
                     Toast.makeText(
                             getContext(),
                             "Health folder created",
                             Toast.LENGTH_SHORT
                     ).show();
 
-                    // ✅ OPEN FOLDERS LIST FRAGMENT
+                    // 🔥 2️⃣ Navigate back to folders list
                     requireActivity()
                             .getSupportFragmentManager()
                             .beginTransaction()
