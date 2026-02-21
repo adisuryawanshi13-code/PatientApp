@@ -245,10 +245,11 @@
                     android:padding="20dp">
 
                     <TextView
+                        android:id="@+id/tvAiSummary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:lineSpacingExtra="4dp"
-                        android:text="Patient has a history of Type 2 Diabetes and Hypertension. Recent lab work shows stable glucose levels but slightly elevated LDL. Advised to monitor sodium intake."
+                        android:text=""
                         android:textColor="#1E40AF"
                         android:textSize="14sp" />
 
