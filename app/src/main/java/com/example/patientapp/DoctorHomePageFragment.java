@@ -25,7 +25,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 public class DoctorHomePageFragment extends Fragment {
-
+    private Button btnImportGallery;
     private Button btnScanQr;
     private CardView cardRecords;
     private TextView doctorName;
@@ -36,12 +36,31 @@ public class DoctorHomePageFragment extends Fragment {
     public DoctorHomePageFragment() {
         // Required empty constructor
     }
+    private final androidx.activity.result.ActivityResultLauncher<Intent> galleryLauncher =
+            registerForActivityResult(
+                    new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == requireActivity().RESULT_OK
+                                && result.getData() != null) {
 
+                            Intent data = result.getData();
+                            if (data.getData() != null) {
+
+                                // You now have the selected image URI
+                                Toast.makeText(requireContext(),
+                                        "Image Selected Successfully",
+                                        Toast.LENGTH_SHORT).show();
+
+                                // If you want to decode QR from image later,
+                                // we can integrate ML Kit here.
+                            }
+                        }
+                    });
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_doctor_home_page, container, false);
-
+        btnImportGallery = rootView.findViewById(R.id.btnImportGallery);
         btnScanQr = rootView.findViewById(R.id.btnScanQr);
         cardRecords = rootView.findViewById(R.id.card_patient_records);
         doctorName = rootView.findViewById(R.id.doctorName);
@@ -75,10 +94,19 @@ public class DoctorHomePageFragment extends Fragment {
         // QR Scan Button Click
         btnScanQr.setOnClickListener(v -> {
             IntentIntegrator integrator = IntentIntegrator.forSupportFragment(this);
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
             integrator.setPrompt("Scan Patient QR");
             integrator.setBeepEnabled(true);
             integrator.setOrientationLocked(true);
+            integrator.setCaptureActivity(CaptureActivityPortrait.class); // 🔥 important
             integrator.initiateScan();
+        });
+        btnImportGallery.setOnClickListener(v -> {
+
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+
+            galleryLauncher.launch(intent);
         });
 
         // Open Records Directly (Manual navigation)

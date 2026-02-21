@@ -189,6 +189,24 @@
                         app:iconTint="#0088FF"
                         app:iconGravity="textEnd"
                         app:iconPadding="8dp" />
+                    <Button
+                        android:id="@+id/btnImportGallery"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="12dp"
+                        android:text="Import from Gallery"
+                        android:textAllCaps="false"
+                        android:backgroundTint="#1A56DB"
+                        android:textColor="#FFFFFF" /><Button
+                    android:id="@+id/btnImportGallery"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="12dp"
+                    android:text="Import from Gallery"
+                    android:textAllCaps="false"
+                    android:backgroundTint="#1A56DB"
+                    android:textColor="#FFFFFF" />
+
 
                 </LinearLayout>
 

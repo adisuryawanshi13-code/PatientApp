@@ -1,4 +1,6 @@
 package com.example.patientapp;
 
-public class CaptureActivityPortrait {
+import com.journeyapps.barcodescanner.CaptureActivity;
+
+public class CaptureActivityPortrait extends CaptureActivity {
 }
