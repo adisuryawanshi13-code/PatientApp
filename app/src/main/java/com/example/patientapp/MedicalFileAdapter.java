@@ -2,13 +2,16 @@ package com.example.patientapp;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -43,24 +46,45 @@ public class MedicalFileAdapter
 
         MedicalFileModel file = fileList.get(position);
 
-        holder.tvFileName.setText("Medical File");
-        holder.tvFileSubtitle.setText("Uploaded recently");
+        if (file.displayName != null) {
+            holder.tvFileName.setText(file.displayName);
+            holder.tvFileSubtitle.setText(file.subtitle);
+        } else {
+            holder.tvFileName.setText("Medical File");
+            holder.tvFileSubtitle.setText("Uploaded recently");
+        }
+        if ("PRESCRIPTION".equals(file.category)) {
+            holder.ivIconType.setImageResource(R.drawable.ic_medkit);
 
-        if ("XRAY".equals(file.category)) {
+        } else if ("XRAY".equals(file.category)) {
             holder.ivIconType.setImageResource(R.drawable.hand_bones);
+
         } else if ("REPORT".equals(file.category)) {
             holder.ivIconType.setImageResource(R.drawable.ic_pdf);
+
         } else if ("DOCUMENT".equals(file.category)) {
             holder.ivIconType.setImageResource(R.drawable.docs);
         }
 
-        holder.btnDownload.setOnClickListener(v -> {
-            String downloadUrl =
-                    file.fileUrl.replace("/upload/", "/upload/fl_attachment/");
+        holder.itemView.setOnClickListener(v -> {
 
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(downloadUrl));
-            v.getContext().startActivity(intent);
+            if ("PRESCRIPTION".equals(file.category)) {
+
+                Bundle bundle = new Bundle();
+                bundle.putString("prescriptionId", file.id);
+                bundle.putString("patientId", file.patientId); // make sure this exists
+
+                ViewPrescriptionFragment fragment =
+                        new ViewPrescriptionFragment();
+                fragment.setArguments(bundle);
+
+                ((FragmentActivity) v.getContext())
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
         });
     }
 

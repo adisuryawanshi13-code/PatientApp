@@ -6,6 +6,6 @@ import retrofit2.http.POST;
 
 public interface ApiService {
 
-    @POST("/generate-summary")
+    @POST("/api/ai-summary")
     Call<SummaryResponse> generateSummary(@Body SummaryRequest request);
 }

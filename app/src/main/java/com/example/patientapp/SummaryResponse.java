@@ -2,9 +2,14 @@ package com.example.patientapp;
 
 public class SummaryResponse {
 
-    private String summary;
+    private String textSummary;
+    private String imageSummary;
 
-    public String getSummary() {
-        return summary;
+    public String getTextSummary() {
+        return textSummary;
+    }
+
+    public String getImageSummary() {
+        return imageSummary;
     }
 }

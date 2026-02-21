@@ -1,64 +1,160 @@
 package com.example.patientapp;
 
+import android.app.Dialog;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link add_new_prescription#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class add_new_prescription extends Fragment {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+public class add_new_prescription extends DialogFragment {
+
+    private DatabaseReference databaseReference;
+    private FirebaseAuth auth;
+
+    private String patientId;
+    private String folderId;
 
     public add_new_prescription() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment add_new_prescription.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static add_new_prescription newInstance(String param1, String param2) {
-        add_new_prescription fragment = new add_new_prescription();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setStyle(DialogFragment.STYLE_NORMAL,
+                android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            patientId = getArguments().getString("patientId");
+            folderId = getArguments().getString("folderId");
+        }
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }
+
+        return dialog;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().setLayout(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+            );
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_new_prescription, container, false);
+
+        View view = inflater.inflate(
+                R.layout.fragment_add_new_prescription,
+                container,
+                false
+        );
+
+        auth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        TextInputEditText medicineEt =
+                view.findViewById(R.id.medicineNameEt);
+
+        TextInputEditText dosageEt =
+                view.findViewById(R.id.dosageEt);
+
+        TextInputEditText durationEt =
+                view.findViewById(R.id.durationEt);
+
+        view.findViewById(R.id.saveBtn).setOnClickListener(v -> {
+
+            String doctorId = auth.getCurrentUser().getUid();
+
+            String medicineName = medicineEt.getText().toString().trim();
+            String dosage = dosageEt.getText().toString().trim();
+            String duration = durationEt.getText().toString().trim();
+
+            if (medicineName.isEmpty() ||
+                    dosage.isEmpty() ||
+                    duration.isEmpty()) {
+
+                Toast.makeText(getContext(),
+                        "Please fill all fields",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String prescriptionId = databaseReference
+                    .child("prescriptions")
+                    .push()
+                    .getKey();
+
+            Map<String, Object> medicine = new HashMap<>();
+            medicine.put("name", medicineName);
+            medicine.put("form", "Tablet");
+            medicine.put("dosageMg", Integer.parseInt(dosage));
+            medicine.put("timing", "Morning");
+            medicine.put("durationDays", Integer.parseInt(duration));
+            medicine.put("instructions", "After food");
+
+            ArrayList<Map<String, Object>> medicinesList =
+                    new ArrayList<>();
+            medicinesList.add(medicine);
+
+            Map<String, Object> prescriptionMap =
+                    new HashMap<>();
+            prescriptionMap.put("patientId", patientId);
+            prescriptionMap.put("doctorId", doctorId);
+            prescriptionMap.put("folderId", folderId);
+            prescriptionMap.put("medicines", medicinesList);
+            prescriptionMap.put("immutable", true);
+            prescriptionMap.put("createdAt",
+                    ServerValue.TIMESTAMP);
+
+            databaseReference
+                    .child("prescriptions")
+                    .child(patientId)
+                    .child(prescriptionId)
+                    .setValue(prescriptionMap)
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(getContext(),
+                                "Prescription Saved",
+                                Toast.LENGTH_SHORT).show();
+                        dismiss();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(getContext(),
+                                    "Failed to save",
+                                    Toast.LENGTH_SHORT).show());
+
+        });
+
+        return view;
     }
 }

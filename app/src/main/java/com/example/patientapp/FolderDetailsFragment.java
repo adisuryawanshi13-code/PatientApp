@@ -141,8 +141,8 @@ public class FolderDetailsFragment extends Fragment {
 
                 switch (tab.getPosition()) {
                     case 0:
-                        currentCategory = "PRESCRIPTION";
-                        break;
+                        loadPrescriptions();
+                        return; // IMPORTANT: stop loadFiles()
                     case 1:
                         currentCategory = "XRAY";
                         break;
@@ -202,6 +202,24 @@ public class FolderDetailsFragment extends Fragment {
                 .inflate(R.layout.fragment_bottom_sheet_upload_options, null);
 
         dialog.setContentView(sheetView);
+
+        sheetView.findViewById(R.id.prescription)
+                .setOnClickListener(v -> {
+
+                    dialog.dismiss();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("patientId", targetUid);   // get this from current screen
+                    bundle.putString("folderId", folderId);     // current folder
+
+                    add_new_prescription fragment =
+                            new add_new_prescription();
+
+                    fragment.setArguments(bundle);
+
+                    fragment.show(getParentFragmentManager(),
+                            "Prescription");
+                });
 
         sheetView.findViewById(R.id.optionXray)
                 .setOnClickListener(v -> {
@@ -331,7 +349,6 @@ public class FolderDetailsFragment extends Fragment {
         }
     }
 
-    // -------------------- SAVE METADATA --------------------
 
     private void saveFileMetadata(String fileUrl) {
 
@@ -382,6 +399,48 @@ public class FolderDetailsFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(requireContext(),
                         "Failed to load files",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadPrescriptions() {
+
+        DatabaseReference prescriptionRef = FirebaseDatabase.getInstance()
+                .getReference("prescriptions")
+                .child(targetUid);
+
+        prescriptionRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                fileList.clear();
+
+                for (DataSnapshot ds : snapshot.getChildren()) {
+
+                    String folder = ds.child("folderId").getValue(String.class);
+
+                    if (folder != null && folder.equals(folderId)) {
+
+                        MedicalFileModel model = new MedicalFileModel();
+                        model.category = "PRESCRIPTION";
+                        model.fileUrl = "";
+                        model.displayName = "Doctor Prescription";
+                        model.subtitle = "Tap to view medicines";
+                        model.id = ds.getKey();
+                        model.patientId = targetUid;
+
+                        fileList.add(model);
+                    }
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(requireContext(),
+                        "Failed to load prescriptions",
                         Toast.LENGTH_SHORT).show();
             }
         });

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F6FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- HEADER -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/tvMedicationCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Medications (2)"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#222"/>
+
+            <TextView
+                android:id="@+id/tvCourseDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5 Days Course"
+                android:textSize="12sp"
+                android:textColor="#3A6CF4"
+                android:padding="8dp"
+                android:background="#E3EDFF"/>
+        </LinearLayout>
+
+
+        <!-- ================= MEDICINE CARD ================= -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#FFFFFF">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Medicine Name -->
+                <TextView
+                    android:id="@+id/tvMedicineName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Amoxicillin"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#222"/>
+
+                <!-- Dosage -->
+                <TextView
+                    android:id="@+id/tvDosage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="500mg • Tablet"
+                    android:textColor="#3A6CF4"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"/>
+
+                <!-- Timing Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    android:weightSum="3">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="80dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="#F1F3F6">
+
+                        <TextView
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:text="Morning"
+                            android:textSize="12sp"
+                            android:textColor="#999"/>
+
+                        <TextView
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:id="@+id/tvMorning"
+                            android:text="1 Pill"
+                            android:textStyle="bold"
+                            android:textColor="#222"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="80dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="#F1F3F6">
+
+                        <TextView
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:text="Noon"
+                            android:textSize="12sp"
+                            android:textColor="#999"/>
+
+                        <TextView
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:id="@+id/tvNoon"
+                            android:text="0 Pill"
+                            android:textStyle="bold"
+                            android:textColor="#222"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="80dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="#F1F3F6">
+
+                        <TextView
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:text="Night"
+                            android:textSize="12sp"
+                            android:textColor="#999"/>
+
+                        <TextView
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:id="@+id/tvNight"
+                            android:text="0 Pill"
+                            android:textStyle="bold"
+                            android:textColor="#222"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Food Info -->
+                <TextView
+                    android:id="@+id/tvFoodInstruction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Take After Food"
+                    android:textColor="#3A6CF4"
+                    android:textStyle="bold"
+                    android:layout_marginTop="12dp"/>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+        <!-- ================= END MEDICINE CARD ================= -->
+
+    </LinearLayout>
+
+</ScrollView>

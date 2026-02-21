@@ -257,33 +257,22 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"/>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@android:drawable/toast_frame"
-                            android:backgroundTint="#FEF3C7"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="4dp"
-                            android:text="● Chronic Condition"
-                            android:textColor="#92400E"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:background="@android:drawable/toast_frame"
-                            android:backgroundTint="#FEE2E2"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="4dp"
-                            android:text="● Penicillin Allergy"
-                            android:textColor="#991B1B"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                    <Button
+                        android:id="@+id/aisummarybutton"
+                        android:layout_width="200dp"
+                        android:layout_height="56dp"
+                        android:layout_margin="16dp"
+                        android:backgroundTint="#1B5EED"
+                        android:text="AI Summarizer"
+                        android:textAllCaps="false"
+                        android:textSize="16sp"
+                        app:cornerRadius="12dp"
+                        android:layout_gravity="end"
+                        app:icon="@drawable/kid_star"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -494,15 +483,6 @@
                 android:id="@+id/records_container"
                 android:layout_width="match_parent"
                 android:layout_height="500dp" />
-
-            <Button
-                android:id="@+id/aisummarybutton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ai Summarizer"
-                />
-
-
 
         </LinearLayout>
     </ScrollView>

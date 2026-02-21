@@ -16,72 +16,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Prescription"
+            android:textColor="@color/black"
             android:textStyle="bold"
             android:textSize="20sp"
             android:layout_marginBottom="12dp"/>
 
-        <!-- PATIENT CARD -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="16dp">
-
-            <LinearLayout
-                android:padding="16dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:text="PATIENT"
-                        android:textSize="12sp"
-                        android:textColor="#888"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-                    <TextView
-                        android:text="John Doe"
-                        android:textStyle="bold"
-                        android:textSize="16sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-                    <TextView
-                        android:text="Male, 32 years • ID: HC-9921"
-                        android:textSize="13sp"
-                        android:textColor="#666"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:src="@drawable/ic_person"
-                    android:scaleType="centerCrop"/>
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
 
         <!-- MEDICINE NAME -->
         <TextView
-            android:text="Medication Details"
-            android:textStyle="bold"
-            android:layout_marginBottom="12dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:text="Medicene Name"
+            android:text="Medicine Name"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"
             android:layout_width="wrap_content"
@@ -89,33 +32,24 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:endIconMode="custom">
+            android:layout_height="wrap_content">
 
-
-        <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/medicineNameEt"
                 android:hint="Search e.g. Amoxicillin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- SECTION TITLE -->
-        <TextView
-            android:text="Medication Details"
-            android:textStyle="bold"
-            android:textSize="15sp"
-            android:textColor="#222"
-            android:layout_marginBottom="8dp"/>
 
         <!-- DOSAGE + DURATION -->
         <LinearLayout
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- DOSAGE COLUMN -->
+            <!-- DOSAGE -->
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_weight="1"
@@ -135,6 +69,7 @@
                     android:layout_height="wrap_content">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/dosageEt"
                         android:hint="e.g. 500"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
@@ -146,7 +81,7 @@
                 android:layout_width="12dp"
                 android:layout_height="wrap_content"/>
 
-            <!-- DURATION COLUMN -->
+            <!-- DURATION -->
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_weight="1"
@@ -166,20 +101,23 @@
                     android:layout_height="wrap_content">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/durationEt"
                         android:hint="e.g. 7"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
-
         </LinearLayout>
+
 
         <!-- TIMING -->
         <TextView
             android:text="Timing and Frequency"
             android:textStyle="bold"
-            android:layout_marginTop="18dp"/>
+            android:layout_marginTop="18dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <LinearLayout
             android:layout_marginTop="10dp"
@@ -190,86 +128,40 @@
                 android:text="Morning"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="48dp"/>
 
-            <Space android:layout_width="8dp"/>
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="wrap_content"/>
 
             <com.google.android.material.button.MaterialButton
                 android:text="Noon"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="48dp"/>
 
-            <Space android:layout_width="8dp"/>
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="wrap_content"/>
 
             <com.google.android.material.button.MaterialButton
                 android:text="Night"
                 android:backgroundTint="#3A6CF4"
                 android:textColor="@android:color/white"
                 android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="48dp"/>
         </LinearLayout>
-
-
-        <!-- MEAL CHIPS -->
-        <LinearLayout
-            android:layout_marginTop="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <com.google.android.material.button.MaterialButton
-                android:text="After Meal"
-                android:backgroundTint="#3A6CF4"
-                android:textColor="@android:color/white"
-                android:layout_weight="1"
-                android:layout_height="44dp"/>
-
-            <Space android:layout_width="12dp"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:text="Before Meal"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_weight="1"
-                android:layout_height="44dp"/>
-        </LinearLayout>
-
-
-        <!-- DOCUMENT UPLOAD BOX -->
-        <androidx.cardview.widget.CardView
-            android:layout_marginTop="18dp"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:cardCornerRadius="14dp"
-            app:cardElevation="0dp"
-            android:foreground="?attr/selectableItemBackground"
-            app:cardBackgroundColor="#FFFFFF"
-            app:strokeWidth="2dp"
-            app:strokeColor="#E2E5EA">
-
-            <TextView
-                android:text="Supporting Documents"
-                android:layout_gravity="center"
-                android:textColor="#888"/>
-        </androidx.cardview.widget.CardView>
-
-
-        <!-- SAVE BUTTON -->
-        <com.google.android.material.button.MaterialButton
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="Save & Issue Prescription"
-            android:textSize="16sp"
-            android:backgroundTint="#3A6CF4"
-            android:textColor="@android:color/white"
-            app:cornerRadius="28dp"/>
-
 
         <!-- NOTES -->
         <TextView
             android:layout_marginTop="20dp"
             android:text="Doctor's Notes (Optional)"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -282,16 +174,18 @@
                 android:layout_height="match_parent"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <!-- ADD MEDICINE -->
-        <TextView
-            android:layout_marginTop="18dp"
-            android:text="+ Add Another Medicine"
-            android:textColor="#3A6CF4"
-            android:textStyle="bold"
-            android:gravity="center"
+        <!-- SAVE BUTTON -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/saveBtn"
+            android:layout_marginTop="24dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="56dp"
+            android:text="Save and Issue Prescription"
+            android:textSize="16sp"
+            android:backgroundTint="#3A6CF4"
+            android:textColor="@android:color/white"
+            app:cornerRadius="28dp"/>
+
 
     </LinearLayout>
 

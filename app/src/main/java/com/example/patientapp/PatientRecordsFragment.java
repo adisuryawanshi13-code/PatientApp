@@ -183,20 +183,28 @@ public class PatientRecordsFragment extends Fragment {
                                     DataSnapshot summarySnap =
                                             snapshot.getChildren().iterator().next();
 
-                                    String existingSummary =
-                                            summarySnap.child("summaryText")
+                                    String textSummary =
+                                            summarySnap.child("textSummary")
+                                                    .getValue(String.class);
+
+                                    String imageSummary =
+                                            summarySnap.child("imageSummary")
                                                     .getValue(String.class);
 
                                     Long generatedAt =
                                             summarySnap.child("generatedAt")
                                                     .getValue(Long.class);
 
+                                    // Combine summaries safely
+                                    String finalSummary =
+                                            buildFinalSummary(textSummary, imageSummary);
+
                                     if (generatedAt != null &&
                                             lastMedicalUpdate != null &&
                                             generatedAt >= lastMedicalUpdate) {
 
                                         // ✅ Summary is fresh
-                                        animateSummaryText(existingSummary);
+                                        animateSummaryText(finalSummary);
                                         aiSummaryButton.setEnabled(true);
                                         return;
                                     }
@@ -204,7 +212,6 @@ public class PatientRecordsFragment extends Fragment {
 
                                 // ❌ No summary OR outdated → regenerate
                                 generateNewSummary();
-
                             }
 
                             @Override
@@ -244,14 +251,18 @@ public class PatientRecordsFragment extends Fragment {
 
                         if (response.isSuccessful() && response.body() != null) {
 
-                            String summary = response.body().getSummary();
+                            String textSummary = response.body().getTextSummary();
+                            String imageSummary = response.body().getImageSummary();
 
-                            if (summary == null || summary.isEmpty()) {
+                            String finalSummary =
+                                    buildFinalSummary(textSummary, imageSummary);
+
+                            if (finalSummary.trim().isEmpty()) {
                                 tvAiSummary.setText("No summary generated.");
                                 return;
                             }
 
-                            animateSummaryText(summary);
+                            animateSummaryText(finalSummary);
 
                         } else {
                             tvAiSummary.setText("Server Error.");
@@ -279,6 +290,24 @@ public class PatientRecordsFragment extends Fragment {
                 .replace(R.id.records_container, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private String buildFinalSummary(String textSummary, String imageSummary) {
+
+        StringBuilder builder = new StringBuilder();
+
+        if (textSummary != null && !textSummary.trim().isEmpty()) {
+            builder.append("📄 CLINICAL SUMMARY\n\n")
+                    .append(textSummary.trim())
+                    .append("\n\n");
+        }
+
+        if (imageSummary != null && !imageSummary.trim().isEmpty()) {
+            builder.append("🩻 RADIOLOGY / IMAGE FINDINGS\n\n")
+                    .append(imageSummary.trim());
+        }
+
+        return builder.toString();
     }
 
     @Override

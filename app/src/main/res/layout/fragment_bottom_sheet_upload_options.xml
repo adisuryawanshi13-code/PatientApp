@@ -15,6 +15,41 @@
         android:layout_marginBottom="16dp"/>
 
     <LinearLayout
+        android:id="@+id/prescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:layout_marginLeft="-10dp">
+
+        <FrameLayout
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_icon_circle"
+            android:gravity="center"
+            android:backgroundTint="#D4F0B6">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/ic_medkit"
+                app:tint="#16A81D" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Add Medicines"
+            android:textSize="16sp"
+            android:textColor="#1A1C1E"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/optionXray"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -117,6 +152,8 @@
             android:textColor="#1A1C1E"/>
 
     </LinearLayout>
+
+
 
 
 </LinearLayout>

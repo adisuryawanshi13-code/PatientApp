@@ -127,7 +127,7 @@ public class fragment_otp_verification extends Fragment {
         patientRef.child("currentOtp").setValue(generatedOtp).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 // B. Send the actual SMS
-                sendSmsMessage(patientPhoneNumber, "Your PatientApp verification code is: " + generatedOtp);
+                sendSmsMessage(patientPhoneNumber, "Please note this number:" + generatedOtp);
 
                 Toast.makeText(requireContext(), "OTP sent to " + patientPhoneNumber, Toast.LENGTH_SHORT).show();
 
