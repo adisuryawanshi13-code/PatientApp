@@ -1,0 +1,442 @@
+[1mdiff --git a/app/src/main/java/com/example/patientapp/DoctorHomePageActivity.java b/app/src/main/java/com/example/patientapp/DoctorHomePageActivity.java[m
+[1mindex 688a37b..5be2508 100644[m
+[1m--- a/app/src/main/java/com/example/patientapp/DoctorHomePageActivity.java[m
+[1m+++ b/app/src/main/java/com/example/patientapp/DoctorHomePageActivity.java[m
+[36m@@ -82,7 +82,7 @@[m [mpublic class DoctorHomePageActivity extends AppCompatActivity {[m
+         Bundle bundle = new Bundle();[m
+         bundle.putString("PATIENT_UID", patientUid);[m
+ [m
+[31m-        PatientRecordsFragment fragment = new PatientRecordsFragment();[m
+[32m+[m[32m        PatientDetailsFragment fragment = new PatientDetailsFragment();[m
+         fragment.setArguments(bundle);[m
+ [m
+         getSupportFragmentManager()[m
+[1mdiff --git a/app/src/main/java/com/example/patientapp/HealthFolderActivity.java b/app/src/main/java/com/example/patientapp/HealthFolderActivity.java[m
+[1mindex df30054..0986aa4 100644[m
+[1m--- a/app/src/main/java/com/example/patientapp/HealthFolderActivity.java[m
+[1m+++ b/app/src/main/java/com/example/patientapp/HealthFolderActivity.java[m
+[36m@@ -1,10 +1,16 @@[m
+ package com.example.patientapp;[m
+ [m
+[32m+[m[32mimport android.app.Activity;[m
+[32m+[m[32mimport android.app.DatePickerDialog;[m
+[32m+[m[32mimport android.content.Intent;[m
+ import android.os.Bundle;[m
+[31m-[m
+[32m+[m[32mimport android.widget.ArrayAdapter;[m
+[32m+[m[32mimport android.widget.Button;[m
+[32m+[m[32mimport android.widget.EditText;[m
+[32m+[m[32mimport android.widget.ImageView;[m
+[32m+[m[32mimport android.widget.Spinner;[m
+[32m+[m[32mimport android.widget.Toast;[m
+ import androidx.appcompat.app.AppCompatActivity;[m
+[31m-import androidx.fragment.app.Fragment;[m
+[31m-[m
+ import java.util.Calendar;[m
+ [m
+ public class HealthFolderActivity extends AppCompatActivity {[m
+[36m@@ -14,20 +20,53 @@[m [mpublic class HealthFolderActivity extends AppCompatActivity {[m
+         super.onCreate(savedInstanceState);[m
+         setContentView(R.layout.activity_health_folder);[m
+ [m
+[31m-        // Load fragment ONLY once[m
+[31m-        if (savedInstanceState == null) {[m
+[31m-            loadFragment(new HealthFolderFragment());[m
+[31m-        }[m
+[31m-    }[m
+[32m+[m[32m        // 1. Linking all UI elements[m
+[32m+[m[32m        EditText etName = findViewById(R.id.et_folder_name);[m
+[32m+[m[32m        EditText etDate = findViewById(R.id.et_date);[m
+[32m+[m[32m        EditText etHospital = findViewById(R.id.et_hospital); // Matches the XML ID below[m
+[32m+[m[32m        EditText etDesc = findViewById(R.id.et_description);   // Matches the XML ID below[m
+[32m+[m[32m        Spinner spinner = findViewById(R.id.spinner_category);[m
+[32m+[m[32m        Button btnCreate = findViewById(R.id.btn_create_folder);[m
+[32m+[m[32m        ImageView back = findViewById(R.id.btn_back);[m
+ [m
+[31m-    private void loadFragment(Fragment fragment) {[m
+[31m-        getSupportFragmentManager()[m
+[31m-                .beginTransaction()[m
+[31m-                .replace([m
+[31m-                        R.id.health_folder_fragment_container,[m
+[31m-                        fragment[m
+[31m-                )[m
+[31m-                .commit();[m
+[31m-    }[m
+[31m-}[m
+[32m+[m[32m        // 2. Back Button Logic[m
+[32m+[m[32m        back.setOnClickListener(v -> finish());[m
+[32m+[m
+[32m+[m[32m        // 3. Date Picker Logic[m
+[32m+[m[32m        etDate.setOnClickListener(v -> {[m
+[32m+[m[32m            Calendar c = Calendar.getInstance();[m
+[32m+[m[32m            new DatePickerDialog(this, (view, year, month, day) -> {[m
+[32m+[m[32m                etDate.setText(day + "/" + (month + 1) + "/" + year);[m
+[32m+[m[32m            }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();[m
+[32m+[m[32m        });[m
+ [m
+[32m+[m[32m        // 4. Setup Category Spinner[m
+[32m+[m[32m        String[] items = {"General", "Pathology", "Radiology", "Surgery", "Cytopathology", "Other"};[m
+[32m+[m[32m        spinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items));[m
+[32m+[m
+[32m+[m[32m        // 5. Create Button Logic - Sends ALL data to MainActivity[m
+[32m+[m[32m        btnCreate.setOnClickListener(v -> {[m
+[32m+[m[32m            String name = etName.getText().toString();[m
+[32m+[m[32m            String date = etDate.getText().toString();[m
+[32m+[m[32m            String hospital = etHospital.getText().toString();[m
+[32m+[m[32m            String category = spinner.getSelectedItem().toString();[m
+[32m+[m[32m            String desc = etDesc.getText().toString();[m
+[32m+[m
+[32m+[m[32m            // Validation: Ensure Name and Date are provided at minimum[m
+[32m+[m[32m            if (name.isEmpty() || date.isEmpty()) {[m
+[32m+[m[32m                Toast.makeText(this, "Please provide Folder Name and Date", Toast.LENGTH_SHORT).show();[m
+[32m+[m[32m                return;[m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m            Intent res = new Intent();[m
+[32m+[m[32m            res.putExtra("f_name", name);[m
+[32m+[m[32m            res.putExtra("f_date", date);[m
+[32m+[m[32m            res.putExtra("f_hospital", hospital);[m
+[32m+[m[32m            res.putExtra("f_category", category);[m
+[32m+[m[32m            res.putExtra("f_desc", desc);[m
+[32m+[m
+[32m+[m[32m            setResult(Activity.RESULT_OK, res);[m
+[32m+[m[32m            finish(); // Closes screen and sends data to the Canvas MainActivity[m
+[32m+[m[32m        });[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/app/src/main/java/com/example/patientapp/HealthFolderFragment.java b/app/src/main/java/com/example/patientapp/HealthFolderFragment.java[m
+[1mdeleted file mode 100644[m
+[1mindex 4fe7ab7..0000000[m
+[1m--- a/app/src/main/java/com/example/patientapp/HealthFolderFragment.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,127 +0,0 @@[m
+[31m-package com.example.patientapp;[m
+[31m-[m
+[31m-import android.app.DatePickerDialog;[m
+[31m-import android.os.Bundle;[m
+[31m-import android.view.LayoutInflater;[m
+[31m-import android.view.View;[m
+[31m-import android.view.ViewGroup;[m
+[31m-import android.widget.ArrayAdapter;[m
+[31m-import android.widget.Button;[m
+[31m-import android.widget.EditText;[m
+[31m-import android.widget.ImageView;[m
+[31m-import android.widget.Spinner;[m
+[31m-import android.widget.Toast;[m
+[31m-[m
+[31m-import androidx.annotation.NonNull;[m
+[31m-import androidx.annotation.Nullable;[m
+[31m-import androidx.fragment.app.Fragment;[m
+[31m-[m
+[31m-import java.util.Calendar;[m
+[31m-[m
+[31m-public class HealthFolderFragment extends Fragment {[m
+[31m-[m
+[31m-    private EditText etFolderName, etDate, etHospital, etDescription;[m
+[31m-    private Spinner spCategory;[m
+[31m-    private Button btnCreateFolder;[m
+[31m-    private ImageView btnBack;[m
+[31m-[m
+[31m-    public HealthFolderFragment() {}[m
+[31m-[m
+[31m-    @Nullable[m
+[31m-    @Override[m
+[31m-    public View onCreateView([m
+[31m-            @NonNull LayoutInflater inflater,[m
+[31m-            @Nullable ViewGroup container,[m
+[31m-            @Nullable Bundle savedInstanceState[m
+[31m-    ) {[m
+[31m-[m
+[31m-        View view = inflater.inflate([m
+[31m-                R.layout.fragment_health_folder,[m
+[31m-                container,[m
+[31m-                false[m
+[31m-        );[m
+[31m-[m
+[31m-        // Bind views[m
+[31m-        etFolderName = view.findViewById(R.id.etFolderName);[m
+[31m-        etDate = view.findViewById(R.id.etDate);[m
+[31m-        etHospital = view.findViewById(R.id.etHospital);[m
+[31m-        etDescription = view.findViewById(R.id.etDescription);[m
+[31m-        spCategory = view.findViewById(R.id.spCategory);[m
+[31m-        btnCreateFolder = view.findViewById(R.id.btnCreateFolder);[m
+[31m-        btnBack = view.findViewById(R.id.btnBack);[m
+[31m-[m
+[31m-        setupCategorySpinner();[m
+[31m-        setupDatePicker();[m
+[31m-[m
+[31m-        btnCreateFolder.setOnClickListener(v -> {[m
+[31m-            // TEMP: just show data[m
+[31m-            Toast.makeText([m
+[31m-                    requireContext(),[m
+[31m-                    "Health Folder Created (TEMP)",[m
+[31m-                    Toast.LENGTH_SHORT[m
+[31m-            ).show();[m
+[31m-        });[m
+[31m-[m
+[31m-        btnBack.setOnClickListener(v -> {[m
+[31m-            requireActivity().onBackPressed();[m
+[31m-        });[m
+[31m-[m
+[31m-        return view;[m
+[31m-    }[m
+[31m-[m
+[31m-    // -----------------------------[m
+[31m-    // Spinner setup[m
+[31m-    // -----------------------------[m
+[31m-    private void setupCategorySpinner() {[m
+[31m-[m
+[31m-        String[] categories = {[m
+[31m-                "Dental",[m
+[31m-                "Cardiology",[m
+[31m-                "Neurology",[m
+[31m-                "Orthopedic",[m
+[31m-                "General",[m
+[31m-                "Others"[m
+[31m-        };[m
+[31m-[m
+[31m-        ArrayAdapter<String> adapter = new ArrayAdapter<>([m
+[31m-                requireContext(),[m
+[31m-                android.R.layout.simple_spinner_item,[m
+[31m-                categories[m
+[31m-        );[m
+[31m-[m
+[31m-        adapter.setDropDownViewResource([m
+[31m-                android.R.layout.simple_spinner_dropdown_item[m
+[31m-        );[m
+[31m-[m
+[31m-        spCategory.setAdapter(adapter);[m
+[31m-    }[m
+[31m-[m
+[31m-    // -----------------------------[m
+[31m-    // Date Picker[m
+[31m-    // -----------------------------[m
+[31m-    private void setupDatePicker() {[m
+[31m-[m
+[31m-        etDate.setOnClickListener(v -> {[m
+[31m-[m
+[31m-            Calendar calendar = Calendar.getInstance();[m
+[31m-[m
+[31m-            int year = calendar.get(Calendar.YEAR);[m
+[31m-            int month = calendar.get(Calendar.MONTH);[m
+[31m-            int day = calendar.get(Calendar.DAY_OF_MONTH);[m
+[31m-[m
+[31m-            DatePickerDialog dialog = new DatePickerDialog([m
+[31m-                    requireContext(),[m
+[31m-                    (view, y, m, d) -> {[m
+[31m-                        String selectedDate =[m
+[31m-                                d + "/" + (m + 1) + "/" + y;[m
+[31m-                        etDate.setText(selectedDate);[m
+[31m-                    },[m
+[31m-                    year,[m
+[31m-                    month,[m
+[31m-                    day[m
+[31m-            );[m
+[31m-[m
+[31m-            dialog.show();[m
+[31m-        });[m
+[31m-    }[m
+[31m-}[m
+[1mdiff --git a/app/src/main/java/com/example/patientapp/PatientDetailsFragment.java b/app/src/main/java/com/example/patientapp/PatientDetailsFragment.java[m
+[1mindex 38b4d39..675c5fb 100644[m
+[1m--- a/app/src/main/java/com/example/patientapp/PatientDetailsFragment.java[m
+[1m+++ b/app/src/main/java/com/example/patientapp/PatientDetailsFragment.java[m
+[36m@@ -19,9 +19,11 @@[m [mimport com.google.firebase.database.ValueEventListener;[m
+ [m
+ public class PatientDetailsFragment extends Fragment {[m
+ [m
+[31m-    private TextView tvName, tvVitals;[m
+[32m+[m[32m    private TextView tvName, tvGender, tvBloodGroup, tvHeight;[m
+ [m
+[31m-    public PatientDetailsFragment() {}[m
+[32m+[m[32m    public PatientDetailsFragment() {[m
+[32m+[m[32m        // Required empty public constructor[m
+[32m+[m[32m    }[m
+ [m
+     @Nullable[m
+     @Override[m
+[36m@@ -31,17 +33,20 @@[m [mpublic class PatientDetailsFragment extends Fragment {[m
+             @Nullable Bundle savedInstanceState[m
+     ) {[m
+ [m
+[32m+[m[32m        // 1️⃣ Inflate layout[m
+         View view = inflater.inflate([m
+                 R.layout.fragment_patient_details,[m
+                 container,[m
+                 false[m
+         );[m
+ [m
+[31m-        // Bind views[m
+[32m+[m[32m        // 2️⃣ Bind views[m
+         tvName = view.findViewById(R.id.tvName);[m
+[31m-        tvVitals = view.findViewById(R.id.tvVitals);[m
+[32m+[m[32m        tvGender = view.findViewById(R.id.tvGender);[m
+[32m+[m[32m        tvBloodGroup = view.findViewById(R.id.tvBloodGroup);[m
+[32m+[m[32m        tvHeight = view.findViewById(R.id.tvHeight);[m
+ [m
+[31m-        // Get UID[m
+[32m+[m[32m        // 3️⃣ Get patient UID from arguments[m
+         if (getArguments() != null) {[m
+             String patientUid = getArguments().getString("PATIENT_UID");[m
+             fetchPatientDetails(patientUid);[m
+[36m@@ -50,7 +55,7 @@[m [mpublic class PatientDetailsFragment extends Fragment {[m
+         return view;[m
+     }[m
+ [m
+[31m-    // 🔥 FETCH FROM REALTIME DB[m
+[32m+[m[32m    // 🔥 BACKEND: Fetch patient data[m
+     private void fetchPatientDetails(String patientUid) {[m
+ [m
+         DatabaseReference ref = FirebaseDatabase.getInstance()[m
+[36m@@ -60,10 +65,11 @@[m [mpublic class PatientDetailsFragment extends Fragment {[m
+         ref.addListenerForSingleValueEvent(new ValueEventListener() {[m
+             @Override[m
+             public void onDataChange(@NonNull DataSnapshot snapshot) {[m
+[32m+[m[32m                Log.d("PATIENT_DEBUG", "UID path exists: " + snapshot.exists());[m
+[32m+[m[32m                Log.d("PATIENT_DEBUG", "Snapshot key: " + snapshot.getKey());[m
+ [m
+                 if (!snapshot.exists()) {[m
+                     tvName.setText("Patient not found");[m
+[31m-                    tvVitals.setText("-");[m
+                     return;[m
+                 }[m
+ [m
+[36m@@ -72,36 +78,17 @@[m [mpublic class PatientDetailsFragment extends Fragment {[m
+                 String bloodGroup = snapshot.child("bloodGroup").getValue(String.class);[m
+                 Long height = snapshot.child("heightCm").getValue(Long.class);[m
+ [m
+[31m-                // Name[m
+                 tvName.setText(name != null ? name : "-");[m
+[31m-[m
+[31m-                // Build vitals string safely[m
+[31m-                StringBuilder vitalsBuilder = new StringBuilder();[m
+[31m-[m
+[31m-                if (gender != null && !gender.isEmpty()) {[m
+[31m-                    vitalsBuilder.append(gender);[m
+[31m-                }[m
+[31m-[m
+[31m-                if (height != null) {[m
+[31m-                    if (vitalsBuilder.length() > 0) vitalsBuilder.append(" • ");[m
+[31m-                    vitalsBuilder.append(height).append("cm");[m
+[31m-                }[m
+[31m-[m
+[31m-                if (bloodGroup != null && !bloodGroup.isEmpty()) {[m
+[31m-                    if (vitalsBuilder.length() > 0) vitalsBuilder.append(" • ");[m
+[31m-                    vitalsBuilder.append(bloodGroup);[m
+[31m-                }[m
+[31m-[m
+[31m-                tvVitals.setText([m
+[31m-                        vitalsBuilder.length() > 0 ? vitalsBuilder.toString() : "-"[m
+[31m-                );[m
+[32m+[m[32m                tvGender.setText(gender != null ? gender : "-");[m
+[32m+[m[32m                tvBloodGroup.setText(bloodGroup != null ? bloodGroup : "-");[m
+[32m+[m[32m                tvHeight.setText(height != null ? height + " cm" : "-");[m
+             }[m
+ [m
+             @Override[m
+             public void onCancelled(@NonNull DatabaseError error) {[m
+                 tvName.setText("Error loading data");[m
+[31m-                tvVitals.setText("-");[m
+             }[m
+[32m+[m
+         });[m
+     }[m
+ }[m
+[1mdiff --git a/app/src/main/java/com/example/patientapp/PatientRecordsFragment.java b/app/src/main/java/com/example/patientapp/PatientRecordsFragment.java[m
+[1mindex cbf42f0..9c5744c 100644[m
+[1m--- a/app/src/main/java/com/example/patientapp/PatientRecordsFragment.java[m
+[1m+++ b/app/src/main/java/com/example/patientapp/PatientRecordsFragment.java[m
+[36m@@ -1,105 +1,84 @@[m
+ package com.example.patientapp;[m
+[32m+[m
+ import android.os.Bundle;[m
+[31m-import android.util.Log;[m
+ import android.view.LayoutInflater;[m
+ import android.view.View;[m
+ import android.view.ViewGroup;[m
+ import android.widget.TextView;[m
+[31m-[m
+ import androidx.annotation.NonNull;[m
+ import androidx.annotation.Nullable;[m
+ import androidx.fragment.app.Fragment;[m
+ [m
+[31m-import com.google.firebase.database.DataSnapshot;[m
+[31m-import com.google.firebase.database.DatabaseError;[m
+[31m-import com.google.firebase.database.DatabaseReference;[m
+[31m-import com.google.firebase.database.FirebaseDatabase;[m
+[31m-import com.google.firebase.database.ValueEventListener;[m
+[31m-[m
+ public class PatientRecordsFragment extends Fragment {[m
+ [m
+[31m-    private TextView tvName, tvVitals;[m
+[31m-[m
+[31m-    public PatientRecordsFragment() {}[m
+[31m-[m
+[31m-        @Nullable[m
+[31m-        @Override[m
+[31m-        public View onCreateView([m
+[31m-                @NonNull LayoutInflater inflater,[m
+[31m-                @Nullable ViewGroup container,[m
+[31m-                @Nullable Bundle savedInstanceState[m
+[31m-    ) {[m
+[31m-[m
+[31m-            View view = inflater.inflate([m
+[31m-                    R.layout.fragment_patient_records,[m
+[31m-                    container,[m
+[31m-                    false[m
+[31m-            );[m
+[32m+[m[32m    private TextView tvHeartRate, tvBp, tvSpo2, tvTemp;[m
+ [m
+[31m-            // Bind views[m
+[31m-            tvName = view.findViewById(R.id.tvName);[m
+[31m-            tvVitals = view.findViewById(R.id.tvVitals);[m
+[32m+[m[32m    @Nullable[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {[m
+[32m+[m[32m        View view = inflater.inflate(R.layout.fragment_patient_records, container, false);[m
+ [m
+[31m-            // Get UID[m
+[31m-            if (getArguments() != null) {[m
+[31m-                String patientUid = getArguments().getString("PATIENT_UID");[m
+[31m-                fetchPatientDetails(patientUid);[m
+[32m+[m[32m        // --- NEW LOGIC: Hide the Activity's Top Bar (Doctor Name bar) ---[m
+[32m+[m[32m        if (getActivity() != null) {[m
+[32m+[m[32m            View activityTopBar = getActivity().findViewById(R.id.top_bar);[m
+[32m+[m[32m            if (activityTopBar != null) {[m
+[32m+[m[32m                activityTopBar.setVisibility(View.GONE);[m
+             }[m
+[31m-[m
+[31m-            return view;[m
+         }[m
+ [m
+[31m-private void fetchPatientDetails(String patientUid) {[m
+[31m-[m
+[31m-    DatabaseReference ref = FirebaseDatabase.getInstance()[m
+[31m-            .getReference("users")[m
+[31m-            .child(patientUid);[m
+[31m-[m
+[31m-    ref.addListenerForSingleValueEvent(new ValueEventListener() {[m
+[31m-        @Override[m
+[31m-        public void onDataChange(@NonNull DataSnapshot snapshot) {[m
+[31m-[m
+[31m-            if (!snapshot.exists()) {[m
+[31m-                tvName.setText("Patient not found");[m
+[31m-                tvVitals.setText("-");[m
+[31m-                return;[m
+[32m+[m[32m        // Initialize TextViews for vitals values[m
+[32m+[m[32m        tvHeartRate = view.findViewById(R.id.tv_heart_rate_value);[m
+[32m+[m[32m        tvBp = view.findViewById(R.id.tv_bp_value);[m
+[32m+[m[32m        tvSpo2 = view.findViewById(R.id.tv_spo2_value);[m
+[32m+[m[32m        tvTemp = view.findViewById(R.id.tv_temp_value);[m
+[32m+[m
+[32m+[m[32m        // Back button logic[m
+[32m+[m[32m        view.findViewById(R.id.btn_back_records).setOnClickListener(v -> {[m
+[32m+[m[32m            if (getActivity() != null) {[m
+[32m+[m[32m                // Restore the Activity's Top Bar before going back[m
+[32m+[m[32m                View activityTopBar = getActivity().findViewById(R.id.top_bar);[m
+[32m+[m[32m                if (activityTopBar != null) {[m
+[32m+[m[32m                    activityTopBar.setVisibility(View.VISIBLE);[m
+[32m+[m[32m                }[m
+[32m+[m
+[32m+[m[32m                getActivity().findViewById(R.id.d
