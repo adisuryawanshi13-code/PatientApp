@@ -86,6 +86,53 @@ public class MedicalFileAdapter
                         .commit();
             }
         });
+
+        holder.btnDownload.setOnClickListener(v -> {
+
+            if (file.fileUrl != null && !file.fileUrl.isEmpty()) {
+
+                String url = file.fileUrl.toLowerCase();
+
+                String mimeType = "*/*";
+
+                if (url.endsWith(".pdf")) {
+                    mimeType = "application/pdf";
+                }
+                else if (url.endsWith(".jpg") ||
+                        url.endsWith(".jpeg")) {
+                    mimeType = "image/jpeg";
+                }
+                else if (url.endsWith(".png")) {
+                    mimeType = "image/png";
+                }
+
+                try {
+
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.parse(file.fileUrl), mimeType);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+                    v.getContext().startActivity(
+                            Intent.createChooser(intent, "Open file using")
+                    );
+
+                } catch (Exception e) {
+
+                    // fallback browser
+                    Intent browserIntent =
+                            new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse(file.fileUrl));
+
+                    v.getContext().startActivity(browserIntent);
+                }
+
+            } else {
+
+                Toast.makeText(v.getContext(),
+                        "File not available",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

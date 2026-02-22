@@ -446,5 +446,28 @@ public class FolderDetailsFragment extends Fragment {
         });
     }
 
+    public void openPdfExternally(String url) {
+
+        try {
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.parse(url), "application/pdf");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+            Intent chooser =
+                    Intent.createChooser(intent, "Open PDF using");
+
+            startActivity(chooser);
+
+        }
+        catch (Exception e) {
+
+            // fallback → open in browser
+            Intent browserIntent =
+                    new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
+            startActivity(browserIntent);
+        }
+    }
 
 }
